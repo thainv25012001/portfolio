@@ -1,0 +1,132 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* ---------------------------------------------------------------
+     LIGHT MODE
+     Nen trang nga, chu gan den, accent cam dat dam (#C2410C) de dat
+     do tuong phan AA tren nen sang.
+  --------------------------------------------------------------- */
+  :root {
+    --background: 60 9% 98%; /* #FAFAF9 */
+    --foreground: 0 0% 4%; /* #0A0A0A */
+
+    --muted: 0 0% 94%;
+    --muted-foreground: 0 0% 40%; /* chu phu */
+
+    --border: 0 0% 88%;
+    --input: 0 0% 88%;
+    --ring: 17 88% 40%;
+
+    --primary: 0 0% 4%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 4%;
+    --accent: 0 0% 96%; /* nen hover cua shadcn */
+    --accent-foreground: 0 0% 4%;
+
+    --brand: 17 88% 40%; /* #C2410C */
+    --brand-foreground: 0 0% 98%;
+
+    --line: 0 0% 87%; /* duong ke grid */
+  }
+
+  /* ---------------------------------------------------------------
+     DARK MODE (mac dinh)
+     Accent sang hon mot bac (#EA580C) vi #C2410C tren nen #0A0A0A chi
+     dat 3.8:1 - khong du AA cho chu nho.
+  --------------------------------------------------------------- */
+  .dark {
+    --background: 0 0% 4%; /* #0A0A0A */
+    --foreground: 0 0% 93%; /* #EDEDED */
+
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 58%; /* #949494 */
+
+    --border: 0 0% 16%;
+    --input: 0 0% 16%;
+    --ring: 21 90% 48%;
+
+    --primary: 0 0% 93%;
+    --primary-foreground: 0 0% 4%;
+    --secondary: 0 0% 9%;
+    --secondary-foreground: 0 0% 93%;
+    --accent: 0 0% 10%;
+    --accent-foreground: 0 0% 93%;
+
+    --brand: 21 90% 48%; /* #EA580C */
+    --brand-foreground: 0 0% 4%;
+
+    --line: 0 0% 15%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  :root { color-scheme: light; }
+  .dark { color-scheme: dark; }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "cv11", "ss01";
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Heading dung serif, tracking chat, khong bao gio in dam gia. */
+  h1,
+  h2,
+  h3 {
+    @apply font-display font-normal tracking-tightest;
+  }
+
+  /* Vong focus dung mau accent, khong dung outline mac dinh cua browser. */
+  :focus-visible {
+    @apply outline-none ring-2 ring-brand ring-offset-2 ring-offset-background;
+  }
+
+  ::selection {
+    @apply bg-brand text-brand-foreground;
+  }
+
+  /* Ton trong nguoi dung tat animation o cap he dieu hanh. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Nhan nho dat truoc moi section: "01 / ABOUT" */
+  .section-label {
+    @apply font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground;
+  }
+
+  /* Gach chan chay tu trai sang khi hover - hover state duy nhat cua site. */
+  .link-underline {
+    @apply relative inline-block transition-colors duration-200 ease-editorial;
+  }
+  .link-underline::after {
+    content: "";
+    @apply absolute -bottom-0.5 left-0 h-px w-full origin-right scale-x-0 bg-current;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .link-underline:hover::after,
+  .link-underline:focus-visible::after {
+    @apply origin-left scale-x-100;
+  }
+}

@@ -1,0 +1,51 @@
+import { Reveal } from "@/components/ui/reveal";
+import { cn } from "@/lib/utils";
+
+type SectionProps = {
+  /** Trùng với NavItem.id trong content.ts để anchor link hoạt động. */
+  id: string;
+  /** Số thứ tự hiển thị ở cột trái, ví dụ "01". */
+  index: string;
+  heading: string;
+  children: React.ReactNode;
+  className?: string;
+};
+
+/**
+ * Khung chung cho mọi section: đường kẻ ngang phân cách, cột nhãn bên trái
+ * (số thứ tự + tên section) và cột nội dung bên phải.
+ *
+ * Trên mobile hai cột xếp chồng; từ md trở lên là lưới 2 cột, cột nhãn dính
+ * theo cuộn để luôn nhìn thấy mình đang ở phần nào.
+ */
+export function Section({
+  id,
+  index,
+  heading,
+  children,
+  className,
+}: SectionProps) {
+  return (
+    <section
+      id={id}
+      className={cn(
+        "scroll-mt-24 border-t border-line py-20 md:py-28 lg:py-32",
+        className,
+      )}
+    >
+      <div className="grid gap-8 md:grid-cols-[8rem_1fr] md:gap-12 lg:grid-cols-[10rem_1fr] lg:gap-16">
+        <Reveal>
+          <div className="md:sticky md:top-24">
+            <p className="section-label">
+              <span className="text-brand">{index}</span>
+              <span className="mx-2 text-muted-foreground/40">/</span>
+              {heading}
+            </p>
+          </div>
+        </Reveal>
+
+        <div className="min-w-0">{children}</div>
+      </div>
+    </section>
+  );
+}
