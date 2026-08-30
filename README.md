@@ -11,7 +11,7 @@ npm run dev      # http://localhost:3000 -> tự chuyển sang /en
 
 Toàn bộ chữ hiện trên site nằm trong [`src/data/content.ts`](src/data/content.ts). Component chỉ render, không hardcode chữ nào — sửa nội dung không cần đụng JSX.
 
-**Bắt đầu từ khối `PROFILE` ở đầu file** (tên, số năm kinh nghiệm, email, GitHub, LinkedIn, domain). Sau khi điền xong:
+Khối `PROFILE` ở đầu file đã điền theo `Thai-Nguyen-Resume.docx`. Chỉ còn `siteUrl` cần thay sau khi deploy:
 
 ```bash
 npm run check:todo   # liệt kê các chỗ còn để trống
@@ -19,9 +19,9 @@ npm run check:todo   # liệt kê các chỗ còn để trống
 
 Mỗi chuỗi là một cặp `{ en, vi }`. Thiếu một bản dịch sẽ báo lỗi lúc compile chứ không đợi tới runtime.
 
-> **Bốn dự án trong `content.ts` là bản nháp** — số liệu ("giảm từ ba ngày xuống dưới một ngày", "60fps", "70%") là ví dụ tôi đặt cho đúng khuôn. Sửa lại theo dự án thật trước khi publish.
+> **Cần bạn đọc lại:** phần `problem` của mỗi dự án là cách tôi diễn đạt lại bối cảnh từ resume — resume chỉ nêu giải pháp và kết quả, không nêu vấn đề. Mọi con số (200.000 người dùng, 100.000 thông điệp/ngày) đều lấy nguyên từ resume, không có số nào tự bịa.
 
-Thay CV: ghi đè `public/cv.pdf` (file hiện tại chỉ là placeholder).
+Thay CV: sửa `public/Thai-Nguyen-Resume.docx` rồi convert lại sang `public/cv.pdf` (bản hiện tại đã convert bằng Word).
 
 ## Cấu trúc
 
@@ -32,7 +32,8 @@ src/
   components/
     layout/         header, footer, theme toggle, locale toggle
     sections/       hero, about, tech-stack, projects, experience, contact
-    ui/             button (shadcn), section, reveal, grid-lines
+    ui/             button (shadcn), section, reveal, grid-lines, separated
+    visuals/        diagram SVG của từng dự án
   data/content.ts   toàn bộ nội dung
   lib/              i18n, useInView, cn
 scripts/
@@ -54,7 +55,9 @@ Thêm một ngôn ngữ: thêm mã vào `locales` trong [`src/lib/i18n.ts`](src/
 | Nền | `#FAFAF9` light (mặc định) · `#0A0A0A` dark |
 | Accent | `#EA580C` ở dark, `#C2410C` ở light |
 | Font | Playfair Display (heading) · Inter (body) |
-| Layout | max-width 1100px, hai đường kẻ dọc 1px ở mép container |
+| Layout | max-width 1100px, hai đường kẻ dọc 1px đóng khung nội dung |
+
+**Căn lề:** hai biến `--frame-inset` (vị trí đường kẻ dọc) và `--content-inset` (lề chữ) trong [`globals.css`](src/app/globals.css) điều khiển toàn bộ căn lề của header, main và footer. Chữ luôn thụt vào sâu hơn đường kẻ nên không bao giờ dính vào nó. Sửa hai dòng đó là đổi lề cả site.
 
 Accent dùng hai sắc độ vì `#C2410C` trên nền `#0A0A0A` chỉ đạt tương phản 3.8:1 — không đủ WCAG AA cho chữ nhỏ. Bản sáng hơn ở dark mode đạt 5.6:1.
 
@@ -62,17 +65,34 @@ Accent dùng hai sắc độ vì `#C2410C` trên nền `#0A0A0A` chỉ đạt t�
 
 ## Hình minh hoạ dự án
 
-Mỗi dự án có một field `visual` tuỳ chọn trong `content.ts`:
+Mỗi dự án có field `visuals` tuỳ chọn trong `content.ts` — một **danh sách**, nên một dự án có thể vừa có sơ đồ kiến trúc vừa có ảnh sản phẩm:
 
 ```ts
-visual: { kind: "diagram", id: "price-feed" }              // SVG dựng sẵn
-visual: { kind: "image", src: "/work/abc.png", alt: {…} }  // ảnh thật trong /public
+visuals: [
+  { kind: "diagram", id: "ai-pipeline" },
+  {
+    kind: "image",
+    src: "/work/aivn-dashboard.png",   // ảnh đặt trong public/work/
+    alt: { en: "Teacher dashboard", vi: "Bảng điều khiển giáo viên" },
+    caption: { en: "Teacher dashboard", vi: "Bảng điều khiển giáo viên" },
+    ratio: "16 / 10",                 // chỉ dùng khi dự án có đúng 1 ảnh
+  },
+]
 // bỏ trống -> khối dự án chỉ có chữ, layout vẫn đúng
 ```
 
-Mặc định cả bốn dự án dùng **diagram SVG** vẽ trong [`src/components/visuals/diagrams.tsx`](src/components/visuals/diagrams.tsx) — sơ đồ nguyên lý (luồng duyệt L/C, đường đi của tick giá, lõi TS dùng chung, trục sự kiện Kafka). Chúng tự đổi màu theo theme, không cần file ảnh, và không lộ dữ liệu thật — hợp với hệ thống nội bộ ngân hàng không được phép chụp màn hình.
+### Thêm ảnh sản phẩm
 
-Trong hình chỉ có tên công nghệ và con số, không có câu chữ cần dịch, nên một hình dùng chung cho cả EN và VI.
+1. Bỏ file vào `public/work/`.
+2. Thêm một mục `{ kind: "image", ... }` vào `visuals` của dự án tương ứng — trong `content.ts` đã có sẵn khối ví dụ, chỉ cần bỏ comment.
+
+Cách bố trí: diagram luôn vẽ full width trước, ảnh nằm dưới. **Một ảnh** kéo hết bề ngang cột, chiều cao theo `ratio`. **Từ hai ảnh trở lên** xếp lưới hai cột, mọi ô cùng một kích thước và ảnh fit vào giữa — nhờ vậy ảnh ngang đứng cạnh ảnh dọc (screenshot điện thoại) vẫn thành một hàng phẳng. Trên mobile thì xếp dọc, mỗi ảnh full width.
+
+Ảnh luôn `object-contain` chứ không `cover`: screenshot bị cắt mất một góc giao diện là hỏng. `alt` là bắt buộc theo type.
+
+Cả ba dự án dùng **diagram SVG** vẽ trong [`src/components/visuals/diagrams.tsx`](src/components/visuals/diagrams.tsx) — sơ đồ nguyên lý: API Node đẩy việc sang service AI qua RabbitMQ, luồng KYC tự động trước / người duyệt ngoại lệ, và trục sự kiện Kafka giữ tồn kho khớp lịch sử đơn. Chúng tự đổi màu theo theme, không cần file ảnh, và không lộ giao diện hay dữ liệu thật của khách hàng.
+
+**Quy tắc của diagram:** trong SVG chỉ có tên công nghệ và tên service — thứ giữ nguyên ở mọi ngôn ngữ — nên một hình dùng chung cho cả EN và VI. Mọi câu giải thích nằm ở `caption` trong `content.ts` để còn dịch được. Đừng viết câu tiếng Anh thẳng vào SVG: bản tiếng Việt sẽ hiện nguyên tiếng Anh mà không ai phát hiện. Con số (lượng người dùng, thông lượng) cũng không vẽ vào hình vì chúng đã nằm trong `result` của dự án — viết hai nơi thì sớm muộn cũng lệch.
 
 Khi có screenshot công bố được, đổi `kind` sang `"image"` — không phải sửa JSX. Muốn vẽ thêm diagram: thêm id vào `DiagramId` trong `content.ts`, TypeScript sẽ báo lỗi ở registry `DIAGRAMS` cho tới khi bạn vẽ hình tương ứng.
 

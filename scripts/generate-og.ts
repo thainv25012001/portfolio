@@ -124,10 +124,23 @@ function template(locale: Locale) {
       h("div", {
         style: { width: 40, height: 4, backgroundColor: COLORS.brand, marginRight: 20 },
       }),
+      // Tách từng chữ thành node riêng: với letterSpacing lớn, dấu cách thường
+      // bị nuốt và "FULL-STACK DEVELOPER" đọc thành một chữ dính liền.
       h(
         "div",
-        { style: { display: "flex", fontSize: 22, letterSpacing: 4, color: COLORS.brand } },
-        hero.role[locale].toUpperCase(),
+        {
+          style: {
+            display: "flex",
+            gap: 14,
+            fontSize: 22,
+            letterSpacing: 4,
+            color: COLORS.brand,
+          },
+        },
+        ...hero.role[locale]
+          .toUpperCase()
+          .split(" ")
+          .map((word) => h("div", { style: { display: "flex" } }, word)),
       ),
     ),
     // Giữa: tên + câu định vị

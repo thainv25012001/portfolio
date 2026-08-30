@@ -12,7 +12,7 @@ export function Header({ locale }: HeaderProps) {
 
   return (
     <header className="sticky top-0 z-50 border-b border-line bg-background/80 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-shell items-center justify-between px-6 md:px-8">
+      <div className="shell flex h-16 items-center justify-between">
         {/* Tên rút gọn, bấm vào quay lại đầu trang của đúng ngôn ngữ hiện tại */}
         <Link
           href={`/${locale}`}

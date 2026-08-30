@@ -70,7 +70,12 @@ export function generateMetadata({
     title: meta.title[locale],
     description: meta.description[locale],
     applicationName: PROFILE.name,
-    authors: [{ name: PROFILE.name, url: `https://github.com/${PROFILE.github}` }],
+    authors: [
+      {
+        name: PROFILE.name,
+        url: `https://linkedin.com/in/${PROFILE.linkedin}`,
+      },
+    ],
     creator: PROFILE.name,
     alternates: {
       canonical: `/${locale}`,
@@ -144,17 +149,22 @@ export default function LocaleLayout({
         >
           <GridLines />
 
-          {/* Link bỏ qua nav — chỉ hiện khi tab tới, phục vụ điều hướng bàn phím */}
-          <a
-            href="#main"
-            className="sr-only focus:not-sr-only focus:absolute focus:left-6 focus:top-4 focus:z-[60] focus:bg-background focus:px-4 focus:py-2 focus:text-sm"
-          >
-            {content.nav.skipToContent[locale]}
-          </a>
+          {/* Link bỏ qua nav — chỉ hiện khi tab tới, phục vụ điều hướng bàn phím.
+              Bọc trong .shell để nó canh theo đúng cột nội dung: đặt left theo
+              --content-inset tính từ viewport sẽ lệch khi màn rộng hơn 1100px,
+              vì lúc đó container đã bị đẩy vào giữa. */}
+          <div className="shell relative">
+            <a
+              href="#main"
+              className="sr-only focus:not-sr-only focus:absolute focus:left-content focus:top-4 focus:z-[60] focus:bg-background focus:px-4 focus:py-2 focus:text-sm"
+            >
+              {content.nav.skipToContent[locale]}
+            </a>
+          </div>
 
           <div className="relative z-10">
             <Header locale={locale} />
-            <div className="mx-auto max-w-shell px-6 md:px-8">
+            <div className="shell">
               <main id="main">{children}</main>
               <Footer locale={locale} />
             </div>

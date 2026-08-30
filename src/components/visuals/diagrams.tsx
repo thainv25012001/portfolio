@@ -3,6 +3,7 @@ import type { DiagramId } from "@/data/content";
 import {
   ArrowDown,
   ArrowRight,
+  ArrowUp,
   Box,
   Label,
   Line,
@@ -10,194 +11,99 @@ import {
 } from "@/components/visuals/svg-primitives";
 
 /**
- * Bốn hình vẽ minh hoạ cơ chế của từng dự án.
+ * Hình vẽ minh hoạ kiến trúc của từng dự án.
  *
- * Cố tình chỉ dùng tên công nghệ và con số — không có câu chữ nào cần dịch,
- * nên một hình dùng chung cho cả bản EN và VI.
+ * QUY TẮC: trong hình chỉ có tên công nghệ và tên service — thứ giữ nguyên ở
+ * mọi ngôn ngữ. Mọi câu chữ giải thích đều nằm ở `caption` trong content.ts để
+ * còn dịch được; đừng viết câu tiếng Anh thẳng vào SVG, vì bản tiếng Việt sẽ
+ * hiện nguyên tiếng Anh mà không ai phát hiện ra.
  *
- * Không vẽ dữ liệu thật của hệ thống nội bộ: chỉ là sơ đồ nguyên lý.
+ * Con số (lượng người dùng, thông lượng) cũng không vẽ vào hình: chúng đã nằm
+ * trong `result` của dự án, viết hai nơi thì sớm muộn cũng lệch nhau.
+ *
+ * Đây là sơ đồ nguyên lý, không vẽ dữ liệu hay giao diện thật của khách hàng.
  */
 
 /* -------------------------------------------------------------------------
-   TradeFlow — chuỗi 5 cấp duyệt L/C, và thời gian xử lý trước/sau
+   AIVN — API Node đẩy việc sang service AI qua RabbitMQ, Socket.IO trả kết quả
    ------------------------------------------------------------------------- */
-function LcWorkflow() {
-  const steps = [40, 200, 360, 520, 680];
-  const stepY = 34;
+function AiPipeline() {
+  const boxY = 16;
+  const boxH = 48;
+  const midY = boxY + boxH / 2;
+  const returnY = 104;
+
+  return (
+    <svg viewBox={`0 0 ${VIEWBOX_WIDTH} 130`} className="w-full">
+      <Box x={0} y={boxY} w={120} h={boxH} label="React" />
+      <ArrowRight x={128} y={midY} length={36} />
+
+      <Box x={172} y={boxY} w={156} h={boxH} label="Express API" />
+      <ArrowRight x={336} y={midY} length={36} />
+
+      <Box x={380} y={boxY} w={140} h={boxH} label="RabbitMQ" accent />
+      <ArrowRight x={528} y={midY} length={36} />
+
+      <Box x={572} y={boxY} w={148} h={boxH} label="Python AI" />
+
+      {/* Kết quả chạy ngược về client: xuống, sang trái, rồi lên vào ô React */}
+      <Line x1={646} y1={boxY + boxH} x2={646} y2={returnY} />
+      <Line x1={60} y1={returnY} x2={646} y2={returnY} />
+      <ArrowUp x={60} y={returnY} length={returnY - (boxY + boxH)} />
+      <Label x={352} y={returnY - 10} anchor="middle">
+        Socket.IO
+      </Label>
+    </svg>
+  );
+}
+
+/* -------------------------------------------------------------------------
+   KYC — hàng đợi tách việc ra hai nhánh: máy kiểm tra và người duyệt
+   ------------------------------------------------------------------------- */
+function KycFlow() {
+  const busY = 96;
 
   return (
     <svg viewBox={`0 0 ${VIEWBOX_WIDTH} 200`} className="w-full">
-      {/* Trục ngang nối 5 mốc duyệt */}
-      <Line x1={steps[0]} y1={stepY} x2={steps[4]} y2={stepY} />
+      <Box x={240} y={8} w={240} h={48} label="Express API" />
+      <ArrowDown x={360} y={56} length={32} />
 
-      {steps.map((x, index) => {
-        // Mốc thứ 3 là chỗ hồ sơ hay tắc nhất — tô accent cho nổi.
-        const isBottleneck = index === 2;
-        return (
-          <g key={x}>
-            <rect
-              x={x - 5}
-              y={stepY - 5}
-              width={10}
-              height={10}
-              className={isBottleneck ? "fill-brand" : "fill-line"}
-            />
-            <Label x={x} y={stepY + 24} anchor="middle" accent={isBottleneck}>
-              {`0${index + 1}`}
-            </Label>
-          </g>
-        );
-      })}
-
-      <Label x={0} y={80}>UCP 600 VALIDATION AT EACH STAGE</Label>
-
-      {/* So sánh thời gian xử lý: thanh dài = trước, thanh ngắn accent = sau */}
-      <Label x={0} y={124}>BEFORE</Label>
-      <rect x={110} y={113} width={500} height={12} className="fill-line" />
-      <Label x={624} y={124}>3 DAYS</Label>
-
-      <Label x={0} y={162} accent>AFTER</Label>
-      <rect x={110} y={151} width={150} height={12} className="fill-brand" />
-      <Label x={274} y={162} accent>&lt; 1 DAY</Label>
-    </svg>
-  );
-}
-
-/* -------------------------------------------------------------------------
-   VCBS Trading Terminal — luồng giá đi vòng qua React state, lưới ảo hoá
-   ------------------------------------------------------------------------- */
-function PriceFeed() {
-  const cols = 10;
-  const rows = 3;
-  const cellW = 68;
-  const cellH = 22;
-  const gap = 4;
-  const gridY = 104;
-
-  // Vài ô tô accent để gợi ý các mã đang nhảy giá.
-  const live = new Set(["0-2", "1-5", "1-8", "2-1", "2-6"]);
-
-  return (
-    <svg viewBox={`0 0 ${VIEWBOX_WIDTH} 210`} className="w-full">
-      <Box x={0} y={12} w={168} h={48} label="WebSocket" sub="TICK FEED" />
-      <ArrowRight x={176} y={36} length={40} />
-      <Box x={224} y={12} w={168} h={48} label="ref write" sub="NO RE-RENDER" />
-      <ArrowRight x={400} y={36} length={40} />
-      <Box x={448} y={12} w={168} h={48} label="rAF batch" accent />
-
-      {/* Từ khối batch rẽ xuống lưới giá */}
-      <ArrowDown x={532} y={60} length={36} accent />
-
-      {Array.from({ length: rows }).map((_, row) =>
-        Array.from({ length: cols }).map((_, col) => (
-          <rect
-            key={`${row}-${col}`}
-            x={col * (cellW + gap)}
-            y={gridY + row * (cellH + gap)}
-            width={cellW}
-            height={cellH}
-            className={live.has(`${row}-${col}`) ? "fill-brand" : "fill-line"}
-          />
-        )),
-      )}
-
-      <Label x={0} y={196}>1,700 SYMBOLS VIRTUALISED</Label>
-      <Label x={VIEWBOX_WIDTH} y={196} anchor="end" accent>
-        60 FPS AT PEAK
+      <Label x={140} y={busY - 10} accent>
+        RabbitMQ
       </Label>
+      <rect x={140} y={busY} width={440} height={12} className="fill-brand" />
+
+      <ArrowDown x={250} y={busY + 12} length={34} />
+      <ArrowDown x={470} y={busY + 12} length={34} />
+
+      <Box x={160} y={146} w={180} h={44} label="3rd-party IDV" />
+      <Box x={380} y={146} w={180} h={44} label="Admin review" />
     </svg>
   );
 }
 
 /* -------------------------------------------------------------------------
-   VCBS Mobile — một lõi TypeScript dùng chung cho web và hai nền tảng mobile
+   Marketplace — tồn kho và lịch sử đơn cùng đọc một luồng sự kiện Kafka
    ------------------------------------------------------------------------- */
-function SharedCore() {
-  const targets = [
-    { cx: 110, label: "Web" },
-    { cx: 360, label: "iOS" },
-    { cx: 610, label: "Android" },
-  ];
-  const boxW = 160;
-  const targetY = 132;
+function KafkaOrders() {
+  const busX = 236;
 
   return (
-    <svg viewBox={`0 0 ${VIEWBOX_WIDTH} 208`} className="w-full">
-      <Box
-        x={180}
-        y={8}
-        w={360}
-        h={52}
-        label="@vcbs/core"
-        sub="PRICING · ORDER VALIDATION · TYPES"
-        accent
-      />
+    <svg viewBox={`0 0 ${VIEWBOX_WIDTH} 150`} className="w-full">
+      <Box x={0} y={52} w={180} h={48} label="Order svc" sub="NESTJS" />
+      <ArrowRight x={188} y={76} length={40} accent />
 
-      {/* Thân rẽ ba nhánh xuống ba đích */}
-      <Line x1={360} y1={60} x2={360} y2={92} />
-      <Line x1={targets[0].cx} y1={92} x2={targets[2].cx} y2={92} />
-      {targets.map((target) => (
-        <ArrowDown
-          key={target.label}
-          x={target.cx}
-          y={92}
-          length={targetY - 92}
-        />
-      ))}
-
-      {targets.map((target) => (
-        <Box
-          key={target.label}
-          x={target.cx - boxW / 2}
-          y={targetY}
-          w={boxW}
-          h={44}
-          label={target.label}
-        />
-      ))}
-
-      <Label x={360} y={198} anchor="middle">
-        EXPO · EAS · OTA UPDATES
+      {/* Trục sự kiện dựng đứng, hai consumer cùng đọc */}
+      <Label x={busX} y={14} accent>
+        Kafka
       </Label>
-    </svg>
-  );
-}
+      <rect x={busX} y={22} width={12} height={118} className="fill-brand" />
 
-/* -------------------------------------------------------------------------
-   Auth & Event Gateway — định danh gom về Keycloak, sự kiện phát qua Kafka
-   ------------------------------------------------------------------------- */
-function EventBus() {
-  const services = [340, 480, 620];
-  const busY = 104;
+      <ArrowRight x={busX + 12} y={50} length={56} />
+      <ArrowRight x={busX + 12} y={114} length={56} />
 
-  return (
-    <svg viewBox={`0 0 ${VIEWBOX_WIDTH} 210`} className="w-full">
-      <Box x={0} y={8} w={200} h={44} label="Keycloak" />
-      <ArrowDown x={100} y={52} length={32} />
-      <Label x={112} y={74}>OIDC · ROTATING REFRESH</Label>
-      <Box x={0} y={84} w={248} h={44} label="Gateway" sub="SPRING BOOT" />
-
-      <ArrowRight x={256} y={busY + 2} length={40} accent />
-
-      {/* Trục sự kiện: một thanh accent, ba service cùng tiêu thụ */}
-      <rect x={304} y={busY - 4} width={396} height={12} className="fill-brand" />
-      <Label x={304} y={busY - 14} accent>KAFKA · DOMAIN EVENTS</Label>
-
-      {services.map((x) => (
-        <ArrowDown key={x} x={x} y={busY + 8} length={38} />
-      ))}
-      {services.map((x, index) => (
-        <Box
-          key={x}
-          x={x - 58}
-          y={busY + 46}
-          w={116}
-          h={40}
-          label={`svc ${String.fromCharCode(65 + index)}`}
-        />
-      ))}
-
-      <Label x={0} y={196}>ONE PLACE TO REVOKE A SESSION</Label>
+      <Box x={312} y={26} w={230} h={48} label="Inventory" />
+      <Box x={312} y={90} w={230} h={48} label="Order history" />
     </svg>
   );
 }
@@ -207,8 +113,7 @@ function EventBus() {
  * `DiagramId` trong content.ts mà quên vẽ hình, TypeScript sẽ báo lỗi ngay.
  */
 export const DIAGRAMS: Record<DiagramId, () => JSX.Element> = {
-  "lc-workflow": LcWorkflow,
-  "price-feed": PriceFeed,
-  "shared-core": SharedCore,
-  "event-bus": EventBus,
+  "ai-pipeline": AiPipeline,
+  "kyc-flow": KycFlow,
+  "kafka-orders": KafkaOrders,
 };

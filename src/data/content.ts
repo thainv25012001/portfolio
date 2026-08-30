@@ -7,21 +7,16 @@ import type { L, LList } from "@/lib/i18n";
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
-   >>> SỬA KHỐI NÀY TRƯỚC TIÊN <<<
-   Sau khi điền xong, chạy `npm run check:todo` để chắc chắn không bỏ sót.
+   THÔNG TIN CÁ NHÂN
+   Lấy từ Thai-Nguyen-Resume.docx.
    -------------------------------------------------------------------------- */
 export const PROFILE = {
-  /** TODO: họ tên đầy đủ, hiện ở hero và header. */
-  name: "Your Name",
-  /** TODO: số năm kinh nghiệm — được chèn tự động vào phần About. */
-  yearsOfExperience: 5,
-  /** TODO: email thật — hiển thị thành link lớn ở section Contact. */
-  email: "you@example.com",
-  /** TODO: username GitHub (chỉ username, không kèm https://). */
-  github: "your-github",
-  /** TODO: username LinkedIn (chỉ username, không kèm https://). */
-  linkedin: "your-linkedin",
-  /** Đường dẫn file CV trong thư mục /public. */
+  name: "Nguyen Viet Thai",
+  yearsOfExperience: 3,
+  email: "thainv2501@gmail.com",
+  /** Username LinkedIn (chỉ username, không kèm https://). */
+  linkedin: "thainv2501",
+  /** File CV trong /public — sinh từ Thai-Nguyen-Resume.docx. */
   cvUrl: "/cv.pdf",
   /** TODO: domain thật sau khi deploy — dùng cho SEO và Open Graph. */
   siteUrl: "https://your-domain.vercel.app",
@@ -46,38 +41,51 @@ export type TechGroup = {
 };
 
 /** Id của hình vẽ dựng sẵn — xem src/components/visuals/diagrams.tsx */
-export type DiagramId =
-  | "lc-workflow"
-  | "price-feed"
-  | "shared-core"
-  | "event-bus";
+export type DiagramId = "ai-pipeline" | "kyc-flow" | "kafka-orders";
 
 /**
- * Hình minh hoạ của dự án. Bỏ trống thì khối dự án chỉ có chữ, layout vẫn đúng.
+ * Một hình minh hoạ của dự án.
  *
- * - `diagram`: hình SVG dựng sẵn trong repo. Tự đổi màu theo theme, không cần
- *   file ảnh, và không lộ dữ liệu thật — hợp với hệ thống nội bộ không được
+ * - `diagram`: SVG dựng sẵn trong repo. Tự đổi màu theo theme, không cần file
+ *   ảnh, và không lộ dữ liệu thật — hợp với sản phẩm của khách hàng không được
  *   phép chụp màn hình.
- * - `image`: ảnh thật đặt trong /public. Dùng khi bạn có screenshot công bố được.
- *
- * Đổi từ diagram sang ảnh thật chỉ là sửa dòng này, không đụng JSX.
+ * - `image`: ảnh thật trong /public. Dùng khi bạn có screenshot công bố được.
  */
 export type ProjectVisual =
-  | { kind: "diagram"; id: DiagramId }
-  | { kind: "image"; src: string; alt: L };
+  | { kind: "diagram"; id: DiagramId; caption?: L }
+  | {
+    kind: "image";
+    /** Đường dẫn từ /public, ví dụ "/work/aivn-speaking.png". */
+    src: string;
+    /** Mô tả cho screen reader — bắt buộc, ảnh không có alt là ảnh vô hình. */
+    alt: L;
+    /** Chú thích hiện dưới ảnh. */
+    caption?: L;
+    /**
+     * Tỉ lệ khung, mặc định "16 / 10". Ảnh được fit trọn vào khung
+     * (không cắt xén), nên chọn tỉ lệ gần với ảnh thật để đỡ viền thừa.
+     * Screenshot điện thoại thì dùng "9 / 16".
+     */
+    ratio?: string;
+  };
 
 export type Project = {
   id: string;
   /** Tên riêng của dự án — không dịch. */
   title: string;
-  period: string;
+  period: L;
   /** Một dòng mô tả dự án. */
   tagline: L;
   problem: L;
   solution: L;
   result: L;
   tags: string[];
-  visual?: ProjectVisual;
+  /**
+   * Danh sách hình của dự án. Diagram luôn vẽ full width trước, ảnh xếp lưới
+   * sau (1 ảnh = full width, từ 2 ảnh trở lên = 2 cột). Bỏ trống thì khối dự
+   * án chỉ có chữ, layout vẫn đúng.
+   */
+  visuals?: ProjectVisual[];
 };
 
 export type ExperienceItem = {
@@ -85,7 +93,8 @@ export type ExperienceItem = {
   company: string;
   role: L;
   period: L;
-  location: L;
+  /** Bỏ trống nếu không muốn hiện nơi làm việc. */
+  location?: L;
   points: LList;
 };
 
@@ -127,16 +136,16 @@ export const content: SiteContent = {
   /* ---- SEO / Open Graph ------------------------------------------------ */
   meta: {
     title: {
-      en: `${PROFILE.name} — Frontend Developer`,
-      vi: `${PROFILE.name} — Frontend Developer`,
+      en: `${PROFILE.name} — Full-Stack Developer`,
+      vi: `${PROFILE.name} — Full-Stack Developer`,
     },
     description: {
-      en: `Frontend developer with ${PROFILE.yearsOfExperience} years building banking, trade finance and securities trading interfaces. React, TypeScript, Next.js, React Native.`,
-      vi: `Frontend developer ${PROFILE.yearsOfExperience} năm kinh nghiệm xây giao diện cho ngân hàng, trade finance và giao dịch chứng khoán. React, TypeScript, Next.js, React Native.`,
+      en: `Full-stack developer with ${PROFILE.yearsOfExperience}+ years building microservice web platforms with Node.js, Express, NestJS and React. E-learning, KYC and e-commerce across Vietnam, the US and Malaysia.`,
+      vi: `Full-stack developer hơn ${PROFILE.yearsOfExperience} năm xây nền tảng web microservice với Node.js, Express, NestJS và React. E-learning, KYC và thương mại điện tử ở Việt Nam, Mỹ và Malaysia.`,
     },
     ogAlt: {
-      en: `${PROFILE.name} — Frontend Developer portfolio`,
-      vi: `${PROFILE.name} — Portfolio Frontend Developer`,
+      en: `${PROFILE.name} — Full-Stack Developer portfolio`,
+      vi: `${PROFILE.name} — Portfolio Full-Stack Developer`,
     },
   },
 
@@ -157,14 +166,14 @@ export const content: SiteContent = {
 
   /* ---- 1. Hero --------------------------------------------------------- */
   hero: {
-    role: { en: "Frontend Developer", vi: "Frontend Developer" },
+    role: { en: "Full-Stack Developer", vi: "Full-Stack Developer" },
     currentRole: {
-      en: "Software Developer at Vietcombank Securities",
-      vi: "Software Developer tại Vietcombank Securities",
+      en: "Full-Stack Developer at AIVN · Harrisburg, PA",
+      vi: "Full-Stack Developer tại AIVN · Harrisburg, PA",
     },
     positioning: {
-      en: "I build trading and banking interfaces that stay fast when the numbers move.",
-      vi: "Tôi xây giao diện giao dịch và ngân hàng — thứ phải chạy mượt đúng lúc thị trường biến động.",
+      en: "I build event-driven web platforms — Node.js services, React front ends, and the message queues that keep them in sync.",
+      vi: "Tôi xây nền tảng web hướng sự kiện — service Node.js, giao diện React, và những hàng đợi thông điệp giữ chúng đồng bộ.",
     },
     primaryCta: { en: "View projects", vi: "Xem dự án" },
     secondaryCta: { en: "Download CV", vi: "Tải CV" },
@@ -175,83 +184,67 @@ export const content: SiteContent = {
     heading: { en: "About", vi: "Giới thiệu" },
     paragraphs: {
       en: [
-        `${PROFILE.yearsOfExperience} years writing frontend for systems where a wrong number is a real problem — trade finance at FPT IS, then securities trading at VCBS.`,
-        "I care most about the unglamorous parts: render performance under live data, forms that survive a bank approval chain, and code the next person can read.",
-        "Lately I have been working down the stack — Spring Boot, Kafka, Keycloak — so I can design the contract instead of only consuming it.",
+        `${PROFILE.yearsOfExperience}+ years building microservice platforms for e-learning, KYC and e-commerce clients across Vietnam, the US and Malaysia.`,
+        "Most of my work sits where services meet: RabbitMQ and Kafka queues, Socket.IO channels, and the Python AI services my Node APIs hand work off to.",
+        "Now in Harrisburg, Pennsylvania, starting a Master's in Computer Science while continuing to ship.",
       ],
       vi: [
-        `${PROFILE.yearsOfExperience} năm viết frontend cho những hệ thống mà một con số sai là vấn đề thật — trade finance ở FPT IS, rồi giao dịch chứng khoán ở VCBS.`,
-        "Tôi quan tâm nhất tới những phần không hào nhoáng: hiệu năng render khi dữ liệu chạy realtime, form đủ chắc để đi qua chuỗi phê duyệt của ngân hàng, và code người sau đọc được.",
-        "Gần đây tôi đi xuống phía dưới stack — Spring Boot, Kafka, Keycloak — để có thể thiết kế hợp đồng dữ liệu chứ không chỉ tiêu thụ nó.",
+        `Hơn ${PROFILE.yearsOfExperience} năm xây nền tảng microservice cho khách hàng e-learning, KYC và thương mại điện tử ở Việt Nam, Mỹ và Malaysia.`,
+        "Phần lớn công việc của tôi nằm ở chỗ các service gặp nhau: hàng đợi RabbitMQ và Kafka, kênh realtime Socket.IO, và những service AI viết bằng Python mà API Node của tôi đẩy việc sang.",
+        "Hiện ở Harrisburg, Pennsylvania — vừa bắt đầu chương trình Thạc sĩ Khoa học Máy tính vừa tiếp tục làm sản phẩm.",
       ],
     },
   },
 
-  /* ---- 3. Tech Stack (nhóm, dạng text list) ---------------------------- */
+  /* ---- 3. Tech Stack (nhóm, dạng text list) ----------------------------
+     Chia nhóm theo đúng cách resume của bạn chia.
+     --------------------------------------------------------------------- */
   techStack: {
     heading: { en: "Stack", vi: "Công nghệ" },
     groups: [
       {
-        id: "frontend",
-        label: { en: "Frontend", vi: "Frontend" },
+        id: "languages",
+        label: { en: "Languages & Frameworks", vi: "Ngôn ngữ & Framework" },
         note: { en: "Daily driver", vi: "Dùng hằng ngày" },
-        items: [
-          "React",
-          "TypeScript",
-          "Next.js (App Router)",
-          "React Native",
-          "Expo",
-          "Tailwind CSS",
-          "Zustand",
-          "TanStack Query",
-          "React Hook Form",
-          "Zod",
-          "Vite",
-        ],
+        items: ["Node.js", "Express.js", "NestJS", "React", "JavaScript"],
       },
       {
-        id: "backend",
-        label: { en: "Backend", vi: "Backend" },
-        note: { en: "Actively expanding", vi: "Đang mở rộng" },
+        id: "databases",
+        label: { en: "Databases", vi: "Cơ sở dữ liệu" },
+        note: { en: "In production", vi: "Đã chạy thực tế" },
+        items: ["MySQL", "PostgreSQL", "MongoDB", "Redis"],
+      },
+      {
+        id: "architecture",
+        label: { en: "Architecture & Messaging", vi: "Kiến trúc & Messaging" },
+        note: { en: "Core of my work", vi: "Trọng tâm công việc" },
         items: [
-          "Spring Boot",
-          "Java",
-          "Node.js",
-          "PostgreSQL",
-          "Apache Kafka",
-          "Keycloak (OIDC)",
-          "Redis",
-          "REST / OpenAPI",
+          "Microservices",
+          "RabbitMQ",
+          "Kafka",
+          "Socket.IO",
+          "REST APIs",
         ],
       },
       {
         id: "tools",
         label: { en: "Tools", vi: "Công cụ" },
         note: { en: "Everyday", vi: "Thường dùng" },
-        items: [
-          "Git",
-          "Docker",
-          "GitLab CI",
-          "GitHub Actions",
-          "Vitest",
-          "Playwright",
-          "Figma",
-          "Jira",
-          "Sentry",
-        ],
+        items: ["Git", "Docker", "Jira", "AWS (familiar)"],
       },
     ],
   },
 
   /* ---- 4. Projects ------------------------------------------------------
-     CẢNH BÁO: bốn dự án dưới đây là BẢN NHÁP, số liệu chỉ là ví dụ.
-     Sửa lại theo dự án thật trước khi publish.
+     Ba dự án lấy thẳng từ resume. Phần "vấn đề" là cách tôi diễn đạt lại bối
+     cảnh — bạn đọc lại xem có đúng thực tế không rồi sửa cho khớp.
+     Không có con số nào tôi tự bịa: chỉ dùng số có sẵn trong resume.
      --------------------------------------------------------------------- */
   projects: {
     heading: { en: "Selected Work", vi: "Dự án tiêu biểu" },
     intro: {
-      en: "Four projects that shaped how I work.",
-      vi: "Bốn dự án định hình cách tôi làm việc.",
+      en: "The platforms I have spent the most time inside.",
+      vi: "Những nền tảng tôi dành nhiều thời gian nhất.",
     },
     labels: {
       problem: { en: "Problem", vi: "Vấn đề" },
@@ -260,135 +253,181 @@ export const content: SiteContent = {
     },
     items: [
       {
-        id: "tradeflow",
-        title: "TradeFlow",
-        period: "2021 — 2023",
+        id: "aivn-elearning",
+        title: "AIVN E-learning Platform",
+        period: { en: "2024 — Present", vi: "2024 — nay" },
         tagline: {
-          en: "Trade finance processing for a commercial bank corporate desk — letters of credit, guarantees, collections.",
-          vi: "Hệ thống xử lý trade finance cho khối khách hàng doanh nghiệp của một ngân hàng thương mại — L/C, bảo lãnh, nhờ thu.",
+          en: "E-learning platform for Vietnamese students and teachers, with AI grading, question generation and speaking assessment.",
+          vi: "Nền tảng e-learning cho học sinh và giáo viên Việt Nam, có chấm điểm bằng AI, tự sinh câu hỏi và đánh giá kỹ năng nói.",
         },
         problem: {
-          en: "Letter-of-credit files moved on paper forms and spreadsheets through five levels of approval, with no way to see where a file was stuck.",
-          vi: "Hồ sơ L/C chạy trên form giấy và Excel qua năm cấp phê duyệt, không ai truy được hồ sơ đang tắc ở khâu nào.",
+          en: "Grading speaking practice and writing question banks by hand does not scale to a platform with 200,000 active users.",
+          vi: "Chấm bài nói và soạn ngân hàng câu hỏi thủ công không thể theo kịp một nền tảng có 200.000 người dùng hoạt động.",
         },
         solution: {
-          en: "Rebuilt the workflow as a multi-step form with UCP 600 validation at each stage, plus an operations board showing every file current owner and age.",
-          vi: "Dựng lại luồng nghiệp vụ thành form nhiều bước có validation theo UCP 600 ở từng chặng, kèm bảng điều hành hiển thị hồ sơ đang ở tay ai và tồn bao lâu.",
+          en: "Built ExpressJS APIs and React features that hand this work to Python AI services — speaking assessment, difficulty grading, automatic question generation — connected over RabbitMQ, with Socket.IO pushing results back to the client as they land.",
+          vi: "Xây API ExpressJS và tính năng React đẩy phần việc đó sang các service AI viết bằng Python — đánh giá kỹ năng nói, chấm độ khó, tự sinh câu hỏi — nối với nhau qua RabbitMQ, và dùng Socket.IO trả kết quả về client ngay khi có.",
         },
         result: {
-          en: "Turnaround on a standard L/C dropped from three days to under one. Around 200 tellers use it daily.",
-          vi: "Thời gian xử lý một hồ sơ L/C tiêu chuẩn giảm từ ba ngày xuống dưới một ngày. Khoảng 200 giao dịch viên dùng hằng ngày.",
+          en: "Serves 200,000 active users, with around 100,000 messages a day moving between services.",
+          vi: "Phục vụ 200.000 người dùng hoạt động, khoảng 100.000 thông điệp mỗi ngày chạy giữa các service.",
         },
-        tags: ["React", "TypeScript", "Redux Toolkit", "Ant Design", "Spring Boot"],
-        visual: { kind: "diagram", id: "lc-workflow" },
+        tags: ["Express.js", "React", "RabbitMQ", "Socket.IO", "Python AI"],
+        visuals: [
+          {
+            kind: "diagram",
+            id: "ai-pipeline",
+            caption: {
+              en: "Speaking assessment, difficulty grading and question generation run as Python services behind the queue.",
+              vi: "Đánh giá kỹ năng nói, chấm độ khó và sinh câu hỏi chạy như các service Python phía sau hàng đợi.",
+            },
+          },
+          {
+            kind: "image",
+            src: "/work/examdee/student-home.png",
+            alt: { en: "Student home", vi: "Trang chủ học sinh" },
+            caption: { en: "Student home", vi: "Trang chủ học sinh" },
+            ratio: "1918 / 911",
+          },
+        ],
       },
       {
-        id: "trading-terminal",
-        title: "VCBS Trading Terminal",
-        period: "2023 — 2026",
+        id: "kyc-platform",
+        title: "KYC Identity Verification",
+        period: { en: "2023 — 2024", vi: "2023 — 2024" },
         tagline: {
-          en: "Web trading platform: live price board, order entry, portfolio management.",
-          vi: "Nền tảng giao dịch chứng khoán trên web: bảng giá realtime, đặt lệnh, quản lý danh mục.",
+          en: "Identity document validation and verification for a US client, integrated with third-party providers.",
+          vi: "Hệ thống xác thực và kiểm tra giấy tờ tuỳ thân cho khách hàng Mỹ, tích hợp nhà cung cấp bên thứ ba.",
         },
         problem: {
-          en: "The legacy price board re-rendered the whole table on every tick and fell to roughly 20fps in the first minutes after market open.",
-          vi: "Bảng giá cũ render lại toàn bộ bảng mỗi tick, tụt xuống khoảng 20fps trong những phút đầu sau giờ mở cửa.",
+          en: "Every submitted document waited on a human reviewer, and the admin tooling around that queue made it slower than it needed to be.",
+          vi: "Mọi giấy tờ gửi lên đều phải chờ người duyệt, và công cụ quản trị quanh hàng đợi đó làm quy trình chậm hơn mức cần thiết.",
         },
         solution: {
-          en: "Moved the WebSocket feed out of React state entirely — writes go straight to cells through refs, batched per animation frame — and virtualised the 1,700-symbol list.",
-          vi: "Đưa luồng WebSocket ra khỏi React state hoàn toàn — ghi thẳng vào ô qua ref, gom theo từng animation frame — và ảo hoá danh sách 1.700 mã.",
+          en: "Built ExpressJS APIs for the verification and admin workflows on a RabbitMQ microservice architecture, and integrated third-party identity-verification providers to run the checks automatically.",
+          vi: "Xây API ExpressJS cho luồng xác thực và luồng quản trị trên kiến trúc microservice dùng RabbitMQ, tích hợp dịch vụ xác thực danh tính bên thứ ba để chạy kiểm tra tự động.",
         },
         result: {
-          en: "Holds 60fps through peak session. Main-thread scripting time down about 70%.",
-          vi: "Giữ 60fps suốt phiên cao điểm. Thời gian chạy JS trên main thread giảm khoảng 70%.",
+          en: "Manual document review time down, and admin workflows measurably faster after reworking the business logic and queries.",
+          vi: "Giảm thời gian duyệt giấy tờ thủ công, và luồng quản trị nhanh lên rõ rệt sau khi viết lại logic nghiệp vụ và tối ưu truy vấn.",
         },
-        tags: ["Next.js", "TypeScript", "WebSocket", "TanStack Virtual", "Zustand"],
-        visual: { kind: "diagram", id: "price-feed" },
+        tags: ["Express.js", "RabbitMQ", "Microservices", "Third-party IDV"],
+        visuals: [
+          {
+            kind: "diagram",
+            id: "kyc-flow",
+            caption: {
+              en: "Automated checks run first; a person only sees the exceptions.",
+              vi: "Kiểm tra tự động chạy trước; người chỉ nhìn tới những trường hợp ngoại lệ.",
+            },
+          },
+        ],
       },
       {
-        id: "vcbs-mobile",
-        title: "VCBS Mobile",
-        period: "2024 — 2026",
+        id: "marketplace",
+        title: "Shopee-style Marketplace",
+        period: { en: "2024", vi: "2024" },
         tagline: {
-          en: "iOS and Android trading app sharing its business core with the web platform.",
-          vi: "App giao dịch iOS và Android, dùng chung lõi nghiệp vụ với bản web.",
+          en: "E-commerce marketplace for a Malaysian client — admin order and store management.",
+          vi: "Sàn thương mại điện tử cho khách hàng Malaysia — quản lý đơn hàng và gian hàng phía quản trị.",
         },
         problem: {
-          en: "Web and mobile were written separately, so every rule change had to be implemented twice — and the two implementations drifted apart.",
-          vi: "Web và mobile viết tách rời, mỗi thay đổi nghiệp vụ phải làm hai lần — và hai bản luôn lệch nhau.",
+          en: "Order history and stock tracking drifted apart, so the numbers admins saw did not always match what had actually been sold.",
+          vi: "Lịch sử đơn hàng và tồn kho lệch nhau, nên con số quản trị viên nhìn thấy không phải lúc nào cũng khớp với thực tế đã bán.",
         },
         solution: {
-          en: "Extracted pricing, order validation and shared types into a TypeScript package consumed by both. Built the app on Expo with EAS and over-the-air updates.",
-          vi: "Tách phần định giá, kiểm tra lệnh và kiểu dữ liệu dùng chung ra một package TypeScript cho cả hai bên dùng. App dựng trên Expo với EAS và cập nhật OTA.",
+          en: "Engineered NestJS APIs for order and store management inside a Kafka-based microservice architecture, and redesigned the core order-history and stock-tracking logic.",
+          vi: "Xây API NestJS cho quản lý đơn hàng và gian hàng trong kiến trúc microservice dựa trên Kafka, đồng thời thiết kế lại phần lõi xử lý lịch sử đơn và theo dõi tồn kho.",
         },
         result: {
-          en: "Release cycle for non-native fixes went from two weeks to a few hours.",
-          vi: "Chu kỳ phát hành cho các sửa lỗi không đụng native rút từ hai tuần xuống vài giờ.",
+          en: "Order and inventory data mismatches reduced.",
+          vi: "Giảm tình trạng lệch dữ liệu giữa đơn hàng và tồn kho.",
         },
-        tags: ["React Native", "Expo", "EAS", "TypeScript", "Reanimated"],
-        visual: { kind: "diagram", id: "shared-core" },
+        tags: ["NestJS", "Kafka", "Microservices", "REST APIs"],
+        visuals: [
+          {
+            kind: "diagram",
+            id: "kafka-orders",
+            caption: {
+              en: "Stock and order history are rebuilt from the same event log, so they cannot drift apart.",
+              vi: "Tồn kho và lịch sử đơn cùng dựng lại từ một luồng sự kiện, nên không thể lệch nhau.",
+            },
+          },
+        ],
       },
+
+      /* Muốn thêm dự án hackathon Hedera Guardian (Top 5, 2023) thì bỏ comment
+         khối dưới và điền nội dung thật. Chưa có `visual` thì khối vẫn hiển thị
+         bình thường, chỉ là không có hình.
+
       {
-        id: "auth-gateway",
-        title: "Auth & Event Gateway",
-        period: "2025 — 2026",
-        tagline: {
-          en: "Central identity layer and domain event bus for internal services.",
-          vi: "Lớp định danh tập trung và trục sự kiện nghiệp vụ cho các dịch vụ nội bộ.",
-        },
-        problem: {
-          en: "Each service handled its own login and permissions. The logic diverged between them and there was no reliable way to revoke a session everywhere.",
-          vi: "Mỗi service tự xử lý đăng nhập và phân quyền. Logic mỗi nơi một khác và không có cách nào thu hồi phiên đồng loạt.",
-        },
-        solution: {
-          en: "Consolidated identity into Keycloak with OIDC and rotating refresh tokens, behind a Spring Boot gateway that publishes domain events to Kafka for other services to consume.",
-          vi: "Gom định danh về Keycloak với OIDC và refresh token luân chuyển, đặt sau một gateway Spring Boot phát sự kiện nghiệp vụ lên Kafka cho các service khác tiêu thụ.",
-        },
-        result: {
-          en: "One place to manage identity. Onboarding a new internal service is now a few hours of configuration.",
-          vi: "Chỉ còn một nơi quản lý định danh. Đưa một service nội bộ mới vào hệ thống giờ chỉ mất vài giờ cấu hình.",
-        },
-        tags: ["Spring Boot", "Keycloak", "Kafka", "PostgreSQL", "Docker"],
-        visual: { kind: "diagram", id: "event-bus" },
+        id: "hedera-esg",
+        title: "ESG on Hedera Guardian",
+        period: { en: "2023", vi: "2023" },
+        tagline: { en: "", vi: "" },
+        problem: { en: "", vi: "" },
+        solution: { en: "", vi: "" },
+        result: { en: "Top 5 — Crafting ESG Solutions on Hedera Guardian hackathon.", vi: "Top 5 — hackathon Crafting ESG Solutions on Hedera Guardian." },
+        tags: [],
       },
+      */
     ],
   },
 
-  /* ---- 5. Experience (timeline dọc, 2 mốc) ----------------------------- */
+  /* ---- 5. Experience (timeline dọc) ------------------------------------ */
   experience: {
     heading: { en: "Experience", vi: "Kinh nghiệm" },
     items: [
       {
-        id: "vcbs",
-        company: "Vietcombank Securities (VCBS)",
-        role: { en: "Software Developer", vi: "Software Developer" },
-        period: { en: "2023 — Present", vi: "2023 — nay" },
-        location: { en: "Hanoi", vi: "Hà Nội" },
+        id: "aivn",
+        company: "AIVN",
+        role: { en: "Full-Stack Developer", vi: "Full-Stack Developer" },
+        period: { en: "Nov 2024 — Present", vi: "11/2024 — nay" },
         points: {
           en: [
-            "Own the frontend of the web trading terminal and the Expo mobile app, from the realtime price layer to order entry.",
-            "Extended into backend work: Spring Boot services, Kafka event streams and Keycloak-based authentication.",
+            "Own core features and production hotfixes on an e-learning platform serving 200,000 active users.",
+            "Designed and maintain the RabbitMQ messaging and Socket.IO real-time channels between microservices, carrying around 100,000 messages a day.",
+            "Review code across a team of 6 developers, and optimise business logic and query performance on the slowest workflows.",
           ],
           vi: [
-            "Phụ trách frontend của web trading terminal và app mobile Expo, từ tầng giá realtime tới màn đặt lệnh.",
-            "Mở rộng sang backend: service Spring Boot, luồng sự kiện Kafka và xác thực trên nền Keycloak.",
+            "Phụ trách các tính năng lõi và hotfix production của một nền tảng e-learning phục vụ 200.000 người dùng hoạt động.",
+            "Thiết kế và duy trì hệ thống messaging RabbitMQ cùng các kênh realtime Socket.IO giữa các microservice, tải khoảng 100.000 thông điệp mỗi ngày.",
+            "Review code cho nhóm 6 người, tối ưu logic nghiệp vụ và hiệu năng truy vấn ở những luồng chậm nhất.",
           ],
         },
       },
       {
-        id: "fpt-is",
-        company: "FPT Information System (FPT IS)",
-        role: { en: "Frontend Developer", vi: "Frontend Developer" },
-        period: { en: "2020 — 2023", vi: "2020 — 2023" },
-        location: { en: "Hanoi", vi: "Hà Nội" },
+        id: "vmo",
+        company: "VMO Holdings",
+        role: { en: "Back-End Developer", vi: "Back-End Developer" },
+        period: { en: "Sep 2023 — Nov 2024", vi: "09/2023 — 11/2024" },
         points: {
           en: [
-            "Built trade finance and core banking interfaces delivered to commercial banks.",
-            "Turned dense paper-based banking workflows into forms operators could complete without training.",
+            "Built ExpressJS APIs for a US client's KYC platform on a RabbitMQ microservice architecture, integrating third-party identity-verification providers.",
+            "Engineered NestJS APIs for admin order and store management on a Kafka-based marketplace for a Malaysian client.",
           ],
           vi: [
-            "Xây giao diện trade finance và core banking bàn giao cho các ngân hàng thương mại.",
-            "Chuyển những quy trình ngân hàng nặng giấy tờ thành form mà giao dịch viên hoàn thành được không cần đào tạo.",
+            "Xây API ExpressJS cho nền tảng KYC của khách hàng Mỹ trên kiến trúc microservice dùng RabbitMQ, tích hợp dịch vụ xác thực danh tính bên thứ ba.",
+            "Xây API NestJS cho phần quản trị đơn hàng và gian hàng của một sàn thương mại điện tử dựa trên Kafka cho khách hàng Malaysia.",
+          ],
+        },
+      },
+      {
+        id: "fpt-software",
+        company: "FPT Software",
+        role: {
+          en: "Software Development Intern",
+          vi: "Thực tập sinh Phát triển phần mềm",
+        },
+        period: { en: "Jun 2022 — Sep 2022", vi: "06/2022 — 09/2022" },
+        points: {
+          en: [
+            "Front-end fundamentals (HTML, CSS, JavaScript, jQuery, AJAX) and back-end basics (MySQL, Java web).",
+            "Completed introductory Japanese language training as part of the programme.",
+          ],
+          vi: [
+            "Nền tảng front-end (HTML, CSS, JavaScript, jQuery, AJAX) và cơ bản back-end (MySQL, Java web).",
+            "Hoàn thành khoá tiếng Nhật nhập môn trong chương trình thực tập.",
           ],
         },
       },
@@ -399,17 +438,19 @@ export const content: SiteContent = {
   contact: {
     heading: { en: "Contact", vi: "Liên hệ" },
     blurb: {
-      en: "Open to frontend and full-stack work in fintech. Email is the fastest way to reach me.",
-      vi: "Sẵn sàng cho công việc frontend và full-stack trong lĩnh vực fintech. Nhanh nhất là gửi email.",
+      en: "Open to full-stack and back-end roles in the US. Email is the fastest way to reach me.",
+      vi: "Sẵn sàng cho các vị trí full-stack và back-end tại Mỹ. Nhanh nhất là gửi email.",
     },
     emailLabel: { en: "Email", vi: "Email" },
     socials: [
-      { id: "github", label: "GitHub", href: `https://github.com/${PROFILE.github}` },
       {
         id: "linkedin",
         label: "LinkedIn",
         href: `https://linkedin.com/in/${PROFILE.linkedin}`,
       },
+      // Resume không có GitHub nên tôi không đưa vào. Muốn thêm thì bỏ comment
+      // dòng dưới và thay bằng username thật:
+      // { id: "github", label: "GitHub", href: "https://github.com/USERNAME" },
     ],
   },
 

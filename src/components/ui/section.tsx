@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/ui/reveal";
+import { Separator } from "@/components/ui/separated";
 import { cn } from "@/lib/utils";
 
 type SectionProps = {
@@ -38,7 +39,7 @@ export function Section({
           <div className="md:sticky md:top-24">
             <p className="section-label">
               <span className="text-brand">{index}</span>
-              <span className="mx-2 text-muted-foreground/40">/</span>
+              <Separator>/</Separator>
               {heading}
             </p>
           </div>

@@ -34,7 +34,7 @@ export function Contact({ locale }: ContactProps) {
                 href={social.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="link-underline font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground hover:text-foreground"
+                className="link-underline meta-label hover:text-foreground"
               >
                 {social.label}
               </a>

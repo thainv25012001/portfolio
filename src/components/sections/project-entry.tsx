@@ -1,6 +1,7 @@
 import { Fragment } from "react";
 
-import { ProjectVisual } from "@/components/visuals/project-visual";
+import { Separator } from "@/components/ui/separated";
+import { ProjectVisuals } from "@/components/visuals/project-visual";
 import { content, type Project } from "@/data/content";
 import type { Locale } from "@/lib/i18n";
 
@@ -34,7 +35,7 @@ export function ProjectEntry({ project, index, locale }: ProjectEntryProps) {
           {index}
         </span>
         <span className="font-mono text-[11px] tracking-[0.14em] text-muted-foreground">
-          {project.period}
+          {project.period[locale]}
         </span>
       </div>
 
@@ -46,7 +47,7 @@ export function ProjectEntry({ project, index, locale }: ProjectEntryProps) {
         {project.tagline[locale]}
       </p>
 
-      <ProjectVisual visual={project.visual} locale={locale} />
+      <ProjectVisuals visuals={project.visuals} locale={locale} />
 
       <dl className="mt-8 space-y-4 border-l border-line pl-5 md:space-y-3 md:pl-6">
         {rows.map((row) => (
@@ -54,7 +55,7 @@ export function ProjectEntry({ project, index, locale }: ProjectEntryProps) {
             key={row.key}
             className="grid gap-1 md:grid-cols-[6rem_1fr] md:gap-6"
           >
-            <dt className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground md:pt-1">
+            <dt className="meta-label md:pt-1">
               {row.label}
             </dt>
             <dd className="max-w-2xl text-[15px] leading-relaxed">
@@ -64,14 +65,10 @@ export function ProjectEntry({ project, index, locale }: ProjectEntryProps) {
         ))}
       </dl>
 
-      <ul className="mt-8 flex flex-wrap items-baseline font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
+      <ul className="mt-8 flex flex-wrap items-baseline meta-label">
         {project.tags.map((tag, tagIndex) => (
           <Fragment key={tag}>
-            {tagIndex > 0 && (
-              <li aria-hidden="true" className="select-none px-2 text-muted-foreground/40">
-                &middot;
-              </li>
-            )}
+            {tagIndex > 0 && <Separator as="li" />}
             <li>{tag}</li>
           </Fragment>
         ))}

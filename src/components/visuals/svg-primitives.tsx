@@ -93,24 +93,40 @@ export function Label({
 
 const HEAD = 7;
 
-/** Mũi tên nằm ngang, chạy từ (x, y) sang phải một đoạn `length`. */
-export function ArrowRight({
-  x,
-  y,
-  length,
-  accent,
-}: {
+type ArrowProps = {
   x: number;
   y: number;
   length: number;
   accent?: boolean;
-}) {
-  const tip = x + length;
+};
+
+/**
+ * Mũi tên một hướng. Ba hướng trước đây là ba bản sao gần như giống hệt nhau,
+ * chỉ khác dấu và trục — hình đầu mũi tên bị viết lại ba lần. Giờ dựng một lần
+ * ở đây, ba hàm dưới chỉ là lớp bọc mỏng.
+ */
+function Arrow({
+  x,
+  y,
+  length,
+  accent,
+  dx,
+  dy,
+}: ArrowProps & { dx: number; dy: number }) {
+  const tipX = x + dx * length;
+  const tipY = y + dy * length;
+  // Lùi lại một đoạn HEAD để thân không đâm xuyên qua đầu mũi tên.
+  const baseX = tipX - dx * HEAD;
+  const baseY = tipY - dy * HEAD;
+  // Hai cánh vuông góc với hướng đi.
+  const wingX = dy * 4;
+  const wingY = dx * 4;
+
   return (
     <g className={accent ? "stroke-brand" : "stroke-line"}>
-      <line x1={x} y1={y} x2={tip - HEAD} y2={y} strokeWidth={1} />
+      <line x1={x} y1={y} x2={baseX} y2={baseY} strokeWidth={1} />
       <path
-        d={`M${tip} ${y} L${tip - HEAD} ${y - 4} L${tip - HEAD} ${y + 4} Z`}
+        d={`M${tipX} ${tipY} L${baseX - wingX} ${baseY - wingY} L${baseX + wingX} ${baseY + wingY} Z`}
         strokeWidth={0}
         className={accent ? "fill-brand" : "fill-line"}
       />
@@ -118,29 +134,19 @@ export function ArrowRight({
   );
 }
 
+/** Mũi tên nằm ngang, chạy từ (x, y) sang phải một đoạn `length`. */
+export function ArrowRight(props: ArrowProps) {
+  return <Arrow {...props} dx={1} dy={0} />;
+}
+
 /** Mũi tên thẳng đứng, chạy từ (x, y) xuống dưới một đoạn `length`. */
-export function ArrowDown({
-  x,
-  y,
-  length,
-  accent,
-}: {
-  x: number;
-  y: number;
-  length: number;
-  accent?: boolean;
-}) {
-  const tip = y + length;
-  return (
-    <g className={accent ? "stroke-brand" : "stroke-line"}>
-      <line x1={x} y1={y} x2={x} y2={tip - HEAD} strokeWidth={1} />
-      <path
-        d={`M${x} ${tip} L${x - 4} ${tip - HEAD} L${x + 4} ${tip - HEAD} Z`}
-        strokeWidth={0}
-        className={accent ? "fill-brand" : "fill-line"}
-      />
-    </g>
-  );
+export function ArrowDown(props: ArrowProps) {
+  return <Arrow {...props} dx={0} dy={1} />;
+}
+
+/** Mũi tên thẳng đứng, chạy từ (x, y) lên trên một đoạn `length`. */
+export function ArrowUp(props: ArrowProps) {
+  return <Arrow {...props} dx={0} dy={-1} />;
 }
 
 /** Đường kẻ mảnh, dùng làm nhánh rẽ hoặc trục ngang. */

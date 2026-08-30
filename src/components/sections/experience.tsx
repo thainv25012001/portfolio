@@ -1,5 +1,6 @@
 import { Section } from "@/components/ui/section";
 import { Reveal, STAGGER } from "@/components/ui/reveal";
+import { Separated } from "@/components/ui/separated";
 import { content } from "@/data/content";
 import type { Locale } from "@/lib/i18n";
 
@@ -24,12 +25,13 @@ export function Experience({ locale }: ExperienceProps) {
             />
 
             <Reveal delay={index * STAGGER}>
-              <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
-                {item.period[locale]}
-                <span aria-hidden="true" className="mx-2 text-muted-foreground/40">
-                  /
-                </span>
-                {item.location[locale]}
+              <p className="meta-label">
+                {/* location là tuỳ chọn — Separated tự bỏ phần trống và dấu
+                    phân cách thừa, khỏi cần lồng thêm điều kiện */}
+                <Separated
+                  items={[item.period[locale], item.location?.[locale]]}
+                  separator="/"
+                />
               </p>
 
               <h3 className="mt-3 text-h3">{item.company}</h3>

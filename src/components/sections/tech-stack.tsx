@@ -1,6 +1,7 @@
 import { Fragment } from "react";
 
 import { Section } from "@/components/ui/section";
+import { Separator } from "@/components/ui/separated";
 import { Reveal, STAGGER } from "@/components/ui/reveal";
 import { content } from "@/data/content";
 import type { Locale } from "@/lib/i18n";
@@ -25,7 +26,7 @@ export function TechStack({ locale }: TechStackProps) {
                   {group.label[locale]}
                 </h3>
                 {group.note && (
-                  <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+                  <p className="mt-1 meta-label">
                     {group.note[locale]}
                   </p>
                 )}
@@ -34,14 +35,7 @@ export function TechStack({ locale }: TechStackProps) {
               <ul className="flex flex-wrap items-baseline text-[15px] leading-relaxed text-muted-foreground">
                 {group.items.map((item, itemIndex) => (
                   <Fragment key={item}>
-                    {itemIndex > 0 && (
-                      <li
-                        aria-hidden="true"
-                        className="select-none px-2.5 text-muted-foreground/40"
-                      >
-                        &middot;
-                      </li>
-                    )}
+                    {itemIndex > 0 && <Separator as="li" className="px-2.5" />}
                     <li className="transition-colors duration-200 ease-editorial hover:text-foreground">
                       {item}
                     </li>

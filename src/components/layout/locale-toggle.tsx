@@ -4,6 +4,7 @@ import { Fragment } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { Separator } from "@/components/ui/separated";
 import { localeLabels, locales, type Locale } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
@@ -28,17 +29,13 @@ export function LocaleToggle({ current, label }: LocaleToggleProps) {
     <div role="group" aria-label={label} className="flex items-center">
       {locales.map((locale, index) => (
         <Fragment key={locale}>
-          {index > 0 && (
-            <span aria-hidden="true" className="px-1.5 text-muted-foreground/40">
-              /
-            </span>
-          )}
+          {index > 0 && <Separator className="px-1.5">/</Separator>}
           <Link
             href={`/${locale}${restOfPath}`}
             hrefLang={locale}
             aria-current={locale === current ? "true" : undefined}
             className={cn(
-              "font-mono text-[11px] uppercase tracking-[0.14em] transition-colors duration-200 ease-editorial",
+              "meta-label transition-colors duration-200 ease-editorial",
               locale === current
                 ? "text-foreground"
                 : "text-muted-foreground hover:text-foreground",

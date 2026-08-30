@@ -12,6 +12,13 @@ const config: Config = {
     },
     extend: {
       maxWidth: { shell: "1100px" },
+      // Hai bien le dinh nghia trong globals.css. Dang ky vao spacing scale de
+      // dung duoc nhu utility binh thuong (px-content, mx-frame, left-content)
+      // thay vi phai viet style={{}} inline.
+      spacing: {
+        frame: "var(--frame-inset)",
+        content: "var(--content-inset)",
+      },
       colors: {
         // --- Token chuan shadcn/ui (giu nguyen de `npx shadcn add` chay duoc) ---
         border: "hsl(var(--border))",
