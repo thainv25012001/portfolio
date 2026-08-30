@@ -9,9 +9,26 @@ npm run dev      # http://localhost:3000 -> tự chuyển sang /en
 
 ## Sửa nội dung
 
-Toàn bộ chữ hiện trên site nằm trong [`src/data/content.ts`](src/data/content.ts). Component chỉ render, không hardcode chữ nào — sửa nội dung không cần đụng JSX.
+Toàn bộ chữ hiện trên site nằm trong [`src/data/content/`](src/data/content/). Component chỉ render, không hardcode chữ nào — sửa nội dung không cần đụng JSX.
 
-Khối `PROFILE` ở đầu file đã điền theo `Thai-Nguyen-Resume.docx`. Chỉ còn `siteUrl` cần thay sau khi deploy:
+Mỗi file ứng với đúng một section trên trang:
+
+| File | Phần |
+|---|---|
+| [`profile.ts`](src/data/content/profile.ts) | tên, email, LinkedIn, CV, domain — **sửa đầu tiên** |
+| [`hero.ts`](src/data/content/hero.ts) | 1. Hero |
+| [`about.ts`](src/data/content/about.ts) | 2. About |
+| [`tech-stack.ts`](src/data/content/tech-stack.ts) | 3. Stack |
+| [`projects.ts`](src/data/content/projects.ts) | 4. Selected Work — file dài nhất |
+| [`experience.ts`](src/data/content/experience.ts) | 5. Experience |
+| [`contact.ts`](src/data/content/contact.ts) | 6. Contact |
+| [`site.ts`](src/data/content/site.ts) | metadata, điều hướng, footer, nhãn screen reader |
+
+`index.ts` chỉ gom lại — component vẫn import `@/data/content` như cũ.
+
+> Import **giữa các file trong thư mục này** phải ghi rõ đuôi `.ts`. `scripts/generate-og.ts` nạp thẳng chúng bằng type-stripping của Node, mà Node ESM không tự đoán đuôi file. Bỏ `.ts` đi là script sinh ảnh OG chết lặng (nó nuốt lỗi để không làm hỏng build).
+
+`PROFILE` đã điền theo `Thai-Nguyen-Resume.docx`. Chỉ còn `siteUrl` cần thay sau khi deploy:
 
 ```bash
 npm run check:todo   # liệt kê các chỗ còn để trống
@@ -34,7 +51,7 @@ src/
     sections/       hero, about, tech-stack, projects, experience, contact
     ui/             button (shadcn), section, reveal, grid-lines, separated
     visuals/        diagram SVG của từng dự án
-  data/content.ts   toàn bộ nội dung
+  data/content/     nội dung, tách theo từng section
   lib/              i18n, useInView, cn
 scripts/
   generate-og.ts    sinh ảnh Open Graph tĩnh
@@ -46,7 +63,7 @@ Mỗi ngôn ngữ có URL riêng: `/en` và `/vi`. `/` chuyển hướng về `/
 
 Cách này (thay vì toggle bằng React state) cho phép mỗi ngôn ngữ có metadata, Open Graph và `hreflang` riêng — Google index được cả hai bản, và link chia sẻ ra ngoài giữ đúng ngôn ngữ.
 
-Thêm một ngôn ngữ: thêm mã vào `locales` trong [`src/lib/i18n.ts`](src/lib/i18n.ts), TypeScript sẽ chỉ ra mọi chỗ trong `content.ts` cần bổ sung bản dịch.
+Thêm một ngôn ngữ: thêm mã vào `locales` trong [`src/lib/i18n.ts`](src/lib/i18n.ts), TypeScript sẽ chỉ ra mọi chỗ trong `content/` cần bổ sung bản dịch.
 
 ## Thiết kế
 
@@ -65,7 +82,7 @@ Accent dùng hai sắc độ vì `#C2410C` trên nền `#0A0A0A` chỉ đạt t�
 
 ## Hình minh hoạ dự án
 
-Mỗi dự án có field `visuals` tuỳ chọn trong `content.ts` — một **danh sách**, nên một dự án có thể vừa có sơ đồ kiến trúc vừa có ảnh sản phẩm:
+Mỗi dự án có field `visuals` tuỳ chọn trong `content/projects.ts` — một **danh sách**, nên một dự án có thể vừa có sơ đồ kiến trúc vừa có ảnh sản phẩm:
 
 ```ts
 visuals: [
@@ -84,7 +101,7 @@ visuals: [
 ### Thêm ảnh sản phẩm
 
 1. Bỏ file vào `public/work/`.
-2. Thêm một mục `{ kind: "image", ... }` vào `visuals` của dự án tương ứng — trong `content.ts` đã có sẵn khối ví dụ, chỉ cần bỏ comment.
+2. Thêm một mục `{ kind: "image", ... }` vào `visuals` của dự án tương ứng — trong `content/projects.ts` đã có sẵn khối ví dụ, chỉ cần bỏ comment.
 
 Cách bố trí: diagram luôn vẽ full width trước, ảnh nằm dưới. **Một ảnh** kéo hết bề ngang cột, chiều cao theo `ratio`. **Từ hai ảnh trở lên** xếp lưới hai cột, mọi ô cùng một kích thước và ảnh fit vào giữa — nhờ vậy ảnh ngang đứng cạnh ảnh dọc (screenshot điện thoại) vẫn thành một hàng phẳng. Trên mobile thì xếp dọc, mỗi ảnh full width.
 
@@ -92,9 +109,9 @@ Cách bố trí: diagram luôn vẽ full width trước, ảnh nằm dưới. **
 
 Cả ba dự án dùng **diagram SVG** vẽ trong [`src/components/visuals/diagrams.tsx`](src/components/visuals/diagrams.tsx) — sơ đồ nguyên lý: API Node đẩy việc sang service AI qua RabbitMQ, luồng KYC tự động trước / người duyệt ngoại lệ, và trục sự kiện Kafka giữ tồn kho khớp lịch sử đơn. Chúng tự đổi màu theo theme, không cần file ảnh, và không lộ giao diện hay dữ liệu thật của khách hàng.
 
-**Quy tắc của diagram:** trong SVG chỉ có tên công nghệ và tên service — thứ giữ nguyên ở mọi ngôn ngữ — nên một hình dùng chung cho cả EN và VI. Mọi câu giải thích nằm ở `caption` trong `content.ts` để còn dịch được. Đừng viết câu tiếng Anh thẳng vào SVG: bản tiếng Việt sẽ hiện nguyên tiếng Anh mà không ai phát hiện. Con số (lượng người dùng, thông lượng) cũng không vẽ vào hình vì chúng đã nằm trong `result` của dự án — viết hai nơi thì sớm muộn cũng lệch.
+**Quy tắc của diagram:** trong SVG chỉ có tên công nghệ và tên service — thứ giữ nguyên ở mọi ngôn ngữ — nên một hình dùng chung cho cả EN và VI. Mọi câu giải thích nằm ở `caption` trong `content/projects.ts` để còn dịch được. Đừng viết câu tiếng Anh thẳng vào SVG: bản tiếng Việt sẽ hiện nguyên tiếng Anh mà không ai phát hiện. Con số (lượng người dùng, thông lượng) cũng không vẽ vào hình vì chúng đã nằm trong `result` của dự án — viết hai nơi thì sớm muộn cũng lệch.
 
-Khi có screenshot công bố được, đổi `kind` sang `"image"` — không phải sửa JSX. Muốn vẽ thêm diagram: thêm id vào `DiagramId` trong `content.ts`, TypeScript sẽ báo lỗi ở registry `DIAGRAMS` cho tới khi bạn vẽ hình tương ứng.
+Khi có screenshot công bố được, đổi `kind` sang `"image"` — không phải sửa JSX. Muốn vẽ thêm diagram: thêm id vào `DiagramId` trong `content/projects.ts`, TypeScript sẽ báo lỗi ở registry `DIAGRAMS` cho tới khi bạn vẽ hình tương ứng.
 
 ## Animation
 
@@ -104,7 +121,7 @@ Tự tắt khi người dùng bật *reduce motion* ở hệ điều hành. Nế
 
 ## Ảnh Open Graph
 
-`npm run og` sinh `public/og-en.png` và `public/og-vi.png` từ chính `content.ts` (đã gắn vào `prebuild` nên mỗi lần build là tự cập nhật).
+`npm run og` sinh `public/og-en.png` và `public/og-vi.png` từ chính `content/` (đã gắn vào `prebuild` nên mỗi lần build là tự cập nhật).
 
 Sinh tĩnh thay vì dùng `opengraph-image.tsx` của Next vì hai lý do: `@vercel/og` đóng gói trong Next 14 dựng sai đường dẫn font trên Windows nên route đó crash khi chạy local, và font mặc định của nó chỉ có Latin — chữ tiếng Việt sẽ ra ô vuông. Sinh sẵn PNG tránh cả hai và không tốn gì lúc chạy thật.
 
@@ -114,7 +131,7 @@ Script cần mạng để tải font. Nếu build không có mạng, nó giữ n
 
 1. Push repo lên GitHub.
 2. Vercel → **New Project** → chọn repo. Framework tự nhận là Next.js, không cần chỉnh gì.
-3. Sau khi có domain, sửa `PROFILE.siteUrl` trong `content.ts` rồi deploy lại — `siteUrl` là gốc của canonical URL, `hreflang`, sitemap và thẻ `og:image`.
+3. Sau khi có domain, sửa `PROFILE.siteUrl` trong `content/profile.ts` rồi deploy lại — `siteUrl` là gốc của canonical URL, `hreflang`, sitemap và thẻ `og:image`.
 
 ## Scripts
 

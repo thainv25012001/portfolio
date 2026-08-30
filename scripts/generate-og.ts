@@ -17,7 +17,7 @@ import { join } from "node:path";
 import { Resvg } from "@resvg/resvg-js";
 import satori from "satori";
 
-import { content, PROFILE } from "../src/data/content.ts";
+import { content, PROFILE } from "../src/data/content/index.ts";
 import { locales, type Locale } from "../src/lib/i18n.ts";
 
 const WIDTH = 1200;
