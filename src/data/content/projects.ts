@@ -20,21 +20,21 @@ export type DiagramId = "ai-pipeline" | "kyc-flow" | "kafka-orders";
 export type ProjectVisual =
   | { kind: "diagram"; id: DiagramId; caption?: L }
   | {
-      kind: "image";
-      /** Đường dẫn từ /public, ví dụ "/work/examdee/student-home.png". */
-      src: string;
-      /** Mô tả cho screen reader — bắt buộc, ảnh không có alt là ảnh vô hình. */
-      alt: L;
-      /** Chú thích hiện dưới ảnh. */
-      caption?: L;
-      /**
-       * Tỉ lệ khung, mặc định "16 / 10". Ảnh được fit trọn vào khung
-       * (không cắt xén), nên chọn tỉ lệ đúng bằng kích thước ảnh để đỡ viền thừa.
-       * Chỉ có tác dụng khi dự án có đúng một ảnh — nhiều ảnh thì các ô dùng
-       * chung một chiều cao cố định để đứng cạnh nhau cho phẳng.
-       */
-      ratio?: string;
-    };
+    kind: "image";
+    /** Đường dẫn từ /public, ví dụ "/work/examdee/student-home.png". */
+    src: string;
+    /** Mô tả cho screen reader — bắt buộc, ảnh không có alt là ảnh vô hình. */
+    alt: L;
+    /** Chú thích hiện dưới ảnh. */
+    caption?: L;
+    /**
+     * Tỉ lệ khung, mặc định "16 / 10". Ảnh được fit trọn vào khung
+     * (không cắt xén), nên chọn tỉ lệ đúng bằng kích thước ảnh để đỡ viền thừa.
+     * Chỉ có tác dụng khi dự án có đúng một ảnh — nhiều ảnh thì các ô dùng
+     * chung một chiều cao cố định để đứng cạnh nhau cho phẳng.
+     */
+    ratio?: string;
+  };
 
 export type Project = {
   id: string;
@@ -110,6 +110,13 @@ export const projects: Projects = {
           alt: { en: "Student home", vi: "Trang chủ học sinh" },
           caption: { en: "Student home", vi: "Trang chủ học sinh" },
           ratio: "1918 / 911",
+        },
+        {
+          kind: "image",
+          src: "/work/examdee/talking.png",
+          alt: { en: "Talking to AI", vi: "Nói chuyện với AI" },
+          caption: { en: "Talking to AI", vi: "Nói chuyện với AI" },
+          ratio: "960 / 1572",
         },
       ],
     },
