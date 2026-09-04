@@ -68,10 +68,20 @@ export const footer: Footer = {
 
 /* ---- Nhãn cho screen reader -------------------------------------------- */
 
-export type Ui = { toggleTheme: L; switchLanguage: L; backToTop: L };
+export type Ui = {
+  toggleTheme: L;
+  switchLanguage: L;
+  backToTop: L;
+  gallery: L;
+  prevSlide: L;
+  nextSlide: L;
+};
 
 export const ui: Ui = {
   toggleTheme: { en: "Toggle theme", vi: "Đổi giao diện sáng tối" },
   switchLanguage: { en: "Switch language", vi: "Đổi ngôn ngữ" },
   backToTop: { en: "Back to top", vi: "Lên đầu trang" },
+  gallery: { en: "Project screenshots", vi: "Ảnh màn hình dự án" },
+  prevSlide: { en: "Previous image", vi: "Ảnh trước" },
+  nextSlide: { en: "Next image", vi: "Ảnh sau" },
 };

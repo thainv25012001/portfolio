@@ -49,7 +49,7 @@ src/
   components/
     layout/         header, footer, theme toggle, locale toggle
     sections/       hero, about, tech-stack, projects, experience, contact
-    ui/             button (shadcn), section, reveal, grid-lines, separated
+    ui/             button (shadcn), section, reveal, grid-lines, separated, slider
     visuals/        diagram SVG của từng dự án
   data/content/     nội dung, tách theo từng section
   lib/              i18n, useInView, cn
@@ -92,7 +92,7 @@ visuals: [
     src: "/work/aivn-dashboard.png",   // ảnh đặt trong public/work/
     alt: { en: "Teacher dashboard", vi: "Bảng điều khiển giáo viên" },
     caption: { en: "Teacher dashboard", vi: "Bảng điều khiển giáo viên" },
-    ratio: "16 / 10",                 // chỉ dùng khi dự án có đúng 1 ảnh
+    ratio: "1918 / 911",              // ghi đúng kích thước pixel của ảnh
   },
 ]
 // bỏ trống -> khối dự án chỉ có chữ, layout vẫn đúng
@@ -103,7 +103,11 @@ visuals: [
 1. Bỏ file vào `public/work/`.
 2. Thêm một mục `{ kind: "image", ... }` vào `visuals` của dự án tương ứng — trong `content/projects.ts` đã có sẵn khối ví dụ, chỉ cần bỏ comment.
 
-Cách bố trí: diagram luôn vẽ full width trước, ảnh nằm dưới. **Một ảnh** kéo hết bề ngang cột, chiều cao theo `ratio`. **Từ hai ảnh trở lên** xếp lưới hai cột, mọi ô cùng một kích thước và ảnh fit vào giữa — nhờ vậy ảnh ngang đứng cạnh ảnh dọc (screenshot điện thoại) vẫn thành một hàng phẳng. Trên mobile thì xếp dọc, mỗi ảnh full width.
+Cách bố trí: diagram luôn vẽ full width trước, ảnh nằm dưới. **Một ảnh** hiện thẳng. **Từ hai ảnh trở lên** thành băng ảnh cuộn ngang, mỗi lần một ảnh — xếp lưới nhiều cột sẽ bóp mỗi ảnh còn nửa bề ngang, quá nhỏ để nhìn ra chi tiết giao diện.
+
+Băng ảnh chạy bằng CSS scroll-snap chứ không phải JS: vuốt trên điện thoại, hai ngón trên trackpad và phím mũi tên đều chạy sẵn, JS chết thì vẫn cuộn được. JS chỉ thêm hai nút bấm và số thứ tự cho người dùng chuột.
+
+Mọi khung ảnh dùng chung tỉ lệ của **ảnh cao nhất** trong bộ, nên khung không nhảy chiều cao khi chuyển slide. Ghi `ratio` đúng bằng kích thước pixel thật của ảnh (`"1918 / 911"`) thì ảnh vừa khít, không thừa viền.
 
 Ảnh luôn `object-contain` chứ không `cover`: screenshot bị cắt mất một góc giao diện là hỏng. `alt` là bắt buộc theo type.
 

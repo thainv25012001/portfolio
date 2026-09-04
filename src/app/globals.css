@@ -150,6 +150,16 @@
     @apply meta-label tracking-[0.18em];
   }
 
+  /* An thanh cuon cua bang anh: da co nut bam va so thu tu lam dau hieu roi,
+     thanh cuon cua Windows tho va pha vo nhip thi giac cua khoi anh. */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
   /* Gach chan chay tu trai sang khi hover - hover state duy nhat cua site. */
   .link-underline {
     @apply relative inline-block transition-colors duration-200 ease-editorial;

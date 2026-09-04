@@ -1,10 +1,10 @@
 import Image from "next/image";
 
+import { Slider } from "@/components/ui/slider";
 import { DIAGRAMS } from "@/components/visuals/diagrams";
 import { VIEWBOX_WIDTH } from "@/components/visuals/svg-primitives";
-import type { ProjectVisual } from "@/data/content";
+import { content, type ProjectVisual } from "@/data/content";
 import type { Locale } from "@/lib/i18n";
-import { cn } from "@/lib/utils";
 
 type ProjectVisualsProps = {
   visuals: ProjectVisual[] | undefined;
@@ -13,10 +13,17 @@ type ProjectVisualsProps = {
 
 type ImageVisual = Extract<ProjectVisual, { kind: "image" }>;
 
-const DEFAULT_RATIO = "16 / 10";
+const DEFAULT_RATIO = 16 / 10;
 
 /** Tỉ lệ thu nhỏ tối đa của diagram trước khi chuyển sang cuộn ngang. */
 const MIN_DIAGRAM_SCALE = 0.72;
+
+/** Đổi chuỗi "1918 / 911" trong content.ts thành số để tính toán. */
+function parseRatio(ratio: string | undefined): number {
+  if (!ratio) return DEFAULT_RATIO;
+  const [w, h] = ratio.split("/").map((n) => Number(n.trim()));
+  return w > 0 && h > 0 ? w / h : DEFAULT_RATIO;
+}
 
 /**
  * Chú thích dưới hình. Dùng chung cho cả diagram lẫn ảnh.
@@ -63,44 +70,26 @@ function DiagramFigure({
 function ImageFigure({
   visual,
   locale,
-  /**
-   * true  — ảnh đứng một mình: kéo hết bề ngang cột, chiều cao suy từ `ratio`.
-   * false — ảnh nằm trong lưới nhiều ảnh: mọi ô CÙNG một kích thước, ảnh fit
-   *         vào giữa. Cách này chịu được mọi kiểu tỉ lệ trộn lẫn — ảnh ngang
-   *         cạnh ảnh dọc vẫn thành một hàng phẳng, không lệch không hụt.
-   */
-  standalone,
+  ratio,
 }: {
   visual: ImageVisual;
   locale: Locale;
-  standalone: boolean;
+  /** Tỉ lệ của khung. Trong băng ảnh mọi khung dùng chung một giá trị. */
+  ratio: number;
 }) {
-  // Báo đúng bề rộng thật để Next chọn kích thước ảnh tối ưu. Suy thẳng từ
-  // `standalone` nên không cần truyền thành prop riêng.
-  const sizes = standalone
-    ? "(max-width: 1100px) 100vw, 750px"
-    : "(max-width: 640px) 100vw, 375px";
-
   return (
     <figure>
+      {/* aspectRatio giữ chỗ sẵn nên trang không nhảy layout lúc ảnh đang tải. */}
       <div
-        className={cn(
-          "relative w-full overflow-hidden border border-line bg-secondary",
-          !standalone && "h-48 md:h-[260px]",
-        )}
-        // Chỉ ảnh đứng một mình mới cần tỉ lệ: giữ chỗ sẵn để trang không nhảy
-        // layout lúc ảnh đang tải. Trong lưới thì chiều cao đã cố định rồi.
-        style={
-          standalone
-            ? { aspectRatio: visual.ratio ?? DEFAULT_RATIO }
-            : undefined
-        }
+        className="relative w-full overflow-hidden border border-line bg-secondary"
+        style={{ aspectRatio: ratio }}
       >
         <Image
           src={visual.src}
           alt={visual.alt[locale]}
           fill
-          sizes={sizes}
+          // Ảnh luôn chiếm trọn bề ngang cột nội dung.
+          sizes="(max-width: 1100px) 100vw, 750px"
           // object-contain: fit trọn ảnh vào khung, không cắt mất phần nào của
           // giao diện. Với screenshot thì việc bị cắt mất một góc là hỏng.
           className="object-contain"
@@ -116,13 +105,27 @@ function ImageFigure({
  *
  * Thứ tự cố định, không phụ thuộc thứ tự khai báo: diagram kiến trúc luôn nằm
  * trên (mỗi cái full width), ảnh sản phẩm nằm dưới.
+ *
+ * Một ảnh thì hiện thẳng. Từ hai ảnh trở lên thì thành băng ảnh cuộn ngang —
+ * xếp lưới nhiều cột sẽ bóp mỗi ảnh còn nửa bề ngang, quá nhỏ để nhìn ra chi
+ * tiết giao diện.
  */
 export function ProjectVisuals({ visuals, locale }: ProjectVisualsProps) {
   if (!visuals?.length) return null;
 
+  const { ui } = content;
   const diagrams = visuals.filter((v) => v.kind === "diagram");
   const images = visuals.filter((v): v is ImageVisual => v.kind === "image");
-  const standalone = images.length === 1;
+
+  /**
+   * Mọi khung ảnh dùng chung tỉ lệ của ảnh CAO nhất (tỉ lệ w/h nhỏ nhất).
+   * Ảnh đó vừa khít khung, các ảnh còn lại có viền trên dưới — đổi lại khung
+   * không nhảy chiều cao khi chuyển slide, và tỉ lệ co giãn theo bề rộng màn
+   * hình thay vì bị chốt cứng bằng một con số pixel.
+   */
+  const trackRatio = images.length
+    ? Math.min(...images.map((v) => parseRatio(v.ratio)))
+    : DEFAULT_RATIO;
 
   return (
     <div className="mt-8 space-y-6">
@@ -134,17 +137,25 @@ export function ProjectVisuals({ visuals, locale }: ProjectVisualsProps) {
         />
       ))}
 
-      {images.length > 0 && (
-        <div className={cn("grid gap-6", !standalone && "sm:grid-cols-2")}>
+      {images.length === 1 && (
+        <ImageFigure visual={images[0]} locale={locale} ratio={trackRatio} />
+      )}
+
+      {images.length > 1 && (
+        <Slider
+          label={ui.gallery[locale]}
+          prevLabel={ui.prevSlide[locale]}
+          nextLabel={ui.nextSlide[locale]}
+        >
           {images.map((visual) => (
             <ImageFigure
               key={visual.src}
               visual={visual}
               locale={locale}
-              standalone={standalone}
+              ratio={trackRatio}
             />
           ))}
-        </div>
+        </Slider>
       )}
     </div>
   );

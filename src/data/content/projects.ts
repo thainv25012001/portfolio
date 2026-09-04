@@ -28,10 +28,10 @@ export type ProjectVisual =
     /** Chú thích hiện dưới ảnh. */
     caption?: L;
     /**
-     * Tỉ lệ khung, mặc định "16 / 10". Ảnh được fit trọn vào khung
-     * (không cắt xén), nên chọn tỉ lệ đúng bằng kích thước ảnh để đỡ viền thừa.
-     * Chỉ có tác dụng khi dự án có đúng một ảnh — nhiều ảnh thì các ô dùng
-     * chung một chiều cao cố định để đứng cạnh nhau cho phẳng.
+     * Tỉ lệ khung, mặc định "16 / 10". Ghi đúng kích thước pixel của ảnh
+     * (ví dụ "1918 / 911") thì ảnh vừa khít, không thừa viền.
+     * Nhiều ảnh: cả băng ảnh lấy tỉ lệ của ảnh CAO nhất, nên khung không nhảy
+     * chiều cao khi chuyển slide. Ảnh được fit trọn, không bao giờ bị cắt.
      */
     ratio?: string;
   };
@@ -116,7 +116,7 @@ export const projects: Projects = {
           src: "/work/examdee/talking.png",
           alt: { en: "Talking to AI", vi: "Nói chuyện với AI" },
           caption: { en: "Talking to AI", vi: "Nói chuyện với AI" },
-          ratio: "960 / 1572",
+          ratio: "1918 / 1069",
         },
       ],
     },
