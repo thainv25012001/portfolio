@@ -1,46 +1,53 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
-
 import { useInView } from "@/lib/use-in-view";
 import { cn } from "@/lib/utils";
 
 type RevealProps = {
   children: React.ReactNode;
-  /** Độ trễ (giây) — dùng để tạo stagger giữa các phần tử cùng nhóm. */
+  /**
+   * Độ trễ (giây) để tạo stagger giữa các phần tử cùng nhóm.
+   * Truyền xuống CSS qua biến --reveal-delay.
+   */
   delay?: number;
+  /**
+   * "fade" — mờ dần + trượt lên. Mặc định, dùng cho khối nội dung.
+   * "mask" — chữ trồi lên từ sau một đường kẻ vô hình. Dành cho tiêu đề lớn:
+   *          nó đọc ra như chữ được in lên trang, không phải bay vào.
+   */
+  variant?: "fade" | "mask";
   className?: string;
 };
 
 /**
- * Animation DUY NHẤT của site: fade + trượt lên 16px khi phần tử lọt vào viewport.
+ * Bật chuyển động khi phần tử lọt vào viewport. Chạy một lần, không animate lại.
  *
- * Dùng Intersection Observer thuần (xem lib/use-in-view.ts) để quyết định thời điểm,
- * Framer Motion chỉ lo phần chuyển động. Chạy một lần, không animate lại khi cuộn ngược.
- * Nếu người dùng bật "reduce motion" ở hệ điều hành thì bỏ hẳn animation.
+ * JS ở đây CHỈ làm một việc: bật `data-visible`. Toàn bộ chuyển động nằm trong
+ * CSS (xem globals.css). Nhờ vậy:
+ * - không cần thư viện animation nào (bỏ được framer-motion, ~34 kB)
+ * - SVG do server render vẫn animate được, chỉ cần CSS chọn theo `data-visible`
+ * - `prefers-reduced-motion` xử lý một chỗ trong CSS, không rải rác trong JS
  */
-export function Reveal({ children, delay = 0, className }: RevealProps) {
+export function Reveal({
+  children,
+  delay = 0,
+  variant = "fade",
+  className,
+}: RevealProps) {
   const [ref, isInView] = useInView<HTMLDivElement>();
-  const prefersReducedMotion = useReducedMotion();
-
-  if (prefersReducedMotion) {
-    return <div className={className}>{children}</div>;
-  }
 
   return (
-    <motion.div
+    <div
       ref={ref}
-      // data-reveal: móc cho <noscript> trong layout ép hiện nội dung khi không có JS.
-      // Framer Motion render cả `initial` ở phía server, nên nếu thiếu móc này thì
-      // trang gần như trắng trơn với người tắt JS.
-      data-reveal=""
-      initial={{ opacity: 0, y: 16 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
-      transition={{ duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] }}
+      data-reveal={variant}
+      // Vắng attribute = chưa hiện. Server render không có, client bật sau khi
+      // observer bắn — không lệch hydration vì cả hai lượt đầu đều chưa có.
+      data-visible={isInView ? "" : undefined}
+      style={delay ? { "--reveal-delay": `${delay}s` } as React.CSSProperties : undefined}
       className={cn(className)}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }
 

@@ -35,6 +35,7 @@ import {
 const T = {
   client: { en: "Client", vi: "Máy khách" },
   webApp: { en: "Web app", vi: "Ứng dụng web" },
+  mobileApp: { en: "Mobile app", vi: "Di động" },
   admin: { en: "Admin", vi: "Quản trị" },
   gateway: { en: "API Gateway", vi: "API Gateway" },
   loadBalancer: { en: "Load Balancer", vi: "Cân bằng tải" },
@@ -95,16 +96,18 @@ function aivnArchitecture(locale: Locale): React.ReactNode {
   const pad = 16;
 
   // --- Cột client + CDN ---
+  const clientNames = ["webApp", "mobileApp", "admin"] as const;
   const clientX = 40;
   const clientW = 160;
-  const clients = lane({ start: 90, size: boxH, gap: 16, count: 2 });
+  const clients = lane({ start: 90, size: boxH, gap: 16, count: clientNames.length });
+  const clientLast = clientNames.length - 1;
   const clientFrameY = clients.at(0) - pad;
   const clientFrameH = clients.span + pad * 2;
   const cdnY = clientFrameY + clientFrameH + 16;
 
-  // Nhánh gộp hai client, cũng là nơi rẽ xuống lớp bảo mật.
+  // Nhánh gộp mọi client, cũng là nơi rẽ xuống lớp bảo mật.
   const fanX = clientX + clientW + 16;
-  const fanMid = clients.mid(0) + (clients.mid(1) - clients.mid(0)) / 2;
+  const fanMid = clients.at(0) + clients.span / 2;
 
   // --- Gateway → cân bằng tải ---
   const gwH = 48;
@@ -115,6 +118,9 @@ function aivnArchitecture(locale: Locale): React.ReactNode {
   const svcNames = ["auth", "users", "exams", "content"] as const;
   const svcH = 32;
   const svcPitch = 52;
+  // Duong ghi tep di ra tu service Content. Tra chi so theo TEN chu khong
+  // viet 3: doi thu tu svcNames se ve sai duong ma khong ai bao loi.
+  const contentSvc = svcNames.indexOf("content");
   const svcX = 650;
   const svcW = 210;
   const svcFrameY = 60;
@@ -168,7 +174,7 @@ function aivnArchitecture(locale: Locale): React.ReactNode {
         h={clientFrameH}
         label={t("client")}
       >
-        {(["webApp", "admin"] as const).map((key, i) => (
+        {clientNames.map((key, i) => (
           <Box
             key={key}
             x={clientX + 12}
@@ -188,10 +194,17 @@ function aivnArchitecture(locale: Locale): React.ReactNode {
         dashed
       />
 
-      {/* Gộp hai client, vào gateway, sang cân bằng tải */}
-      <Line x1={clientX + clientW} y1={clients.mid(0)} x2={fanX} y2={clients.mid(0)} />
-      <Line x1={clientX + clientW} y1={clients.mid(1)} x2={fanX} y2={clients.mid(1)} />
-      <Line x1={fanX} y1={clients.mid(0)} x2={fanX} y2={clients.mid(1)} />
+      {/* Gộp mọi client, vào gateway, sang cân bằng tải */}
+      {clientNames.map((key, i) => (
+        <Line
+          key={key}
+          x1={clientX + clientW}
+          y1={clients.mid(i)}
+          x2={fanX}
+          y2={clients.mid(i)}
+        />
+      ))}
+      <Line x1={fanX} y1={clients.mid(0)} x2={fanX} y2={clients.mid(clientLast)} />
       <ArrowRight x={fanX} y={fanMid} length={gw.at(0) - fanX} />
 
       <Box x={gw.at(0)} y={gwY} w={gw.size} h={gwH} label={t("gateway")} />
@@ -295,12 +308,12 @@ function aivnArchitecture(locale: Locale): React.ReactNode {
           label="S3"
         />
       </Frame>
-      <Line x1={svcX + svcW} y1={svc.mid(3)} x2={880} y2={svc.mid(3)} dashed />
-      <Line x1={880} y1={svc.mid(3)} x2={880} y2={storeMid(2)} dashed />
+      <Line x1={svcX + svcW} y1={svc.mid(contentSvc)} x2={880} y2={svc.mid(contentSvc)} dashed />
+      <Line x1={880} y1={svc.mid(contentSvc)} x2={880} y2={storeMid(2)} dashed />
       <ArrowRight x={880} y={storeMid(2)} length={storeX - 880} dashed />
 
       {/* Bảo mật: client rẽ xuống, ba chặng nối chuỗi */}
-      <Line x1={fanX} y1={clients.mid(1)} x2={fanX} y2={secMid} />
+      <Line x1={fanX} y1={clients.mid(clientLast)} x2={fanX} y2={secMid} />
       <ArrowRight x={fanX} y={secMid} length={sec.at(0) - fanX} />
       <Frame x={secX} y={secY} w={secW} h={secH} label={t("security")}>
         <Box x={sec.at(0)} y={secY + pad} w={sec.size} h={boxH} label={t("firewall")} />

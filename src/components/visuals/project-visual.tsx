@@ -1,6 +1,7 @@
 import Image from "next/image";
 
 import { Slider } from "@/components/ui/slider";
+import { DiagramMotion } from "@/components/visuals/diagram-motion";
 import { DIAGRAMS } from "@/components/visuals/diagrams";
 import { content, type ProjectVisual } from "@/data/content";
 import type { Locale } from "@/lib/i18n";
@@ -50,10 +51,9 @@ function DiagramFigure({
 
   return (
     <figure>
-      {/* Diagram chỉ nhắc lại điều ba gạch đầu dòng bên dưới đã nói, nên ẩn khỏi
-          screen reader thay vì bắt viết alt text cho từng hình, từng ngôn ngữ. */}
-      <div
-        aria-hidden="true"
+      {/* DiagramMotion lo phần "khi nào bắt đầu vẽ" — nó theo dõi chính khung
+          hình này, không phải khối dự án bao ngoài. */}
+      <DiagramMotion
         className={cn(
           "overflow-x-auto border border-line px-5 py-6 md:px-7",
           // Lùi trái đúng bằng cột nhãn + khoảng cách của Section, nên hình
@@ -72,7 +72,7 @@ function DiagramFigure({
         >
           {diagram.render(locale)}
         </svg>
-      </div>
+      </DiagramMotion>
       {visual.caption && <Caption>{visual.caption[locale]}</Caption>}
     </figure>
   );

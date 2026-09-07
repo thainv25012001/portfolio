@@ -75,7 +75,7 @@ const config: Config = {
       borderRadius: { none: "0" },
       transitionTimingFunction: {
         // Easing dung chung cho moi animation cua site.
-        editorial: "cubic-bezier(0.22, 1, 0.36, 1)",
+        editorial: "var(--ease-editorial)",
       },
     },
   },

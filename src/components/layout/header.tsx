@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { LocaleToggle } from "@/components/layout/locale-toggle";
+import { SectionNav } from "@/components/layout/section-nav";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { content, PROFILE } from "@/data/content";
 import type { Locale } from "@/lib/i18n";
@@ -22,21 +23,12 @@ export function Header({ locale }: HeaderProps) {
         </Link>
 
         <div className="flex items-center gap-6">
-          {/* Ẩn trên mobile: trang một cột, cuộn xuống là thấy hết */}
-          <nav aria-label="Section navigation" className="hidden md:block">
-            <ul className="flex items-center gap-6">
-              {nav.items.map((item) => (
-                <li key={item.id}>
-                  <a
-                    href={`#${item.id}`}
-                    className="link-underline text-[13px] text-muted-foreground hover:text-foreground"
-                  >
-                    {item.label[locale]}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
+          <SectionNav
+            items={nav.items.map((item) => ({
+              id: item.id,
+              label: item.label[locale],
+            }))}
+          />
 
           <div className="flex items-center gap-3">
             <LocaleToggle current={locale} label={ui.switchLanguage[locale]} />

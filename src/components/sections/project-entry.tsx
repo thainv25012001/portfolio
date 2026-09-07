@@ -31,7 +31,7 @@ export function ProjectEntry({ project, index, locale }: ProjectEntryProps) {
   return (
     <article className="group py-10 md:py-14">
       <div className="flex items-baseline justify-between gap-4">
-        <span className="font-mono text-[11px] tracking-[0.18em] text-brand">
+        <span className="font-mono text-[11px] tracking-[0.18em] text-brand transition-transform duration-500 ease-editorial group-hover:-translate-y-0.5">
           {index}
         </span>
         <span className="font-mono text-[11px] tracking-[0.14em] text-muted-foreground">
@@ -42,6 +42,10 @@ export function ProjectEntry({ project, index, locale }: ProjectEntryProps) {
       <h3 className="mt-4 text-h3 transition-colors duration-300 ease-editorial group-hover:text-brand md:text-h2">
         {project.title}
       </h3>
+
+      {/* Hairline chạy từ trái sang khi trỏ vào khối — hover state duy nhất
+          ở cấp khối, thay cho việc đổi màu nền. */}
+      <div aria-hidden="true" className="project-rule mt-4 h-px bg-brand" />
 
       <p className="mt-3 max-w-2xl text-body text-muted-foreground">
         {project.tagline[locale]}

@@ -32,7 +32,7 @@ export function TechStack({ locale }: TechStackProps) {
                 )}
               </div>
 
-              <ul className="flex flex-wrap items-baseline text-body text-muted-foreground">
+              <ul className="dim-siblings flex flex-wrap items-baseline text-body text-muted-foreground">
                 {group.items.map((item, itemIndex) => (
                   <Fragment key={item}>
                     {itemIndex > 0 && <Separator as="li" className="px-2.5" />}

@@ -10,6 +10,8 @@
  *   rộng viewBox của mình; DiagramFigure suy ra bề rộng tối thiểu từ đó.
  */
 
+import { cn } from "@/lib/utils";
+
 /** Độ dày của thanh hàng đợi/trục sự kiện. Một chỗ duy nhất. */
 const BUS_THICKNESS = 12;
 
@@ -37,7 +39,9 @@ export function Box({ x, y, w, h, label, sub, accent }: BoxProps) {
   const cy = y + h / 2;
 
   return (
-    <g>
+    // dg-fade dat o <g> chu khong o tung con: ba phan tu nay luon hien cung
+    // nhau, mot lop animation la du va do la ba node it hon phai ve lai.
+    <g className="dg-fade">
       <rect
         x={x}
         y={y}
@@ -52,7 +56,10 @@ export function Box({ x, y, w, h, label, sub, accent }: BoxProps) {
           x={cx}
           y={sub ? cy - 3 : cy + 5}
           textAnchor="middle"
-          className={`font-mono text-[14px] ${accent ? "fill-brand" : "fill-foreground"}`}
+          className={cn(
+            "font-mono text-[14px]",
+            accent ? "fill-brand" : "fill-foreground",
+          )}
         >
           {label}
         </text>
@@ -90,9 +97,10 @@ export function Label({
       x={x}
       y={y}
       textAnchor={anchor}
-      className={`font-mono text-[12px] tracking-[0.08em] ${
-        accent ? "fill-brand" : "fill-muted-foreground"
-      }`}
+      className={cn(
+        "dg-fade font-mono text-[12px] tracking-[0.08em]",
+        accent ? "fill-brand" : "fill-muted-foreground",
+      )}
     >
       {children}
     </text>
@@ -157,7 +165,10 @@ export function Bus({
         y={y}
         width={vertical ? BUS_THICKNESS : length}
         height={vertical ? length : BUS_THICKNESS}
-        className="fill-brand"
+        className={cn(
+          "fill-brand",
+          vertical ? "dg-bus-vertical" : "dg-bus",
+        )}
       />
     </g>
   );
@@ -209,11 +220,13 @@ function Arrow({
         y2={baseY}
         strokeWidth={1}
         strokeDasharray={dashed ? DASH : undefined}
+        pathLength={dashed ? undefined : 1}
+        className={dashed ? "dg-fade" : "dg-line"}
       />
       <path
         d={`M${tipX} ${tipY} L${baseX - wingX} ${baseY - wingY} L${baseX + wingX} ${baseY + wingY} Z`}
         strokeWidth={0}
-        className={accent ? "fill-brand" : "fill-line"}
+        className={cn("dg-head", accent ? "fill-brand" : "fill-line")}
       />
     </g>
   );
@@ -256,7 +269,10 @@ export function Line({
       y2={y2}
       strokeWidth={1}
       strokeDasharray={dashed ? DASH : undefined}
-      className="stroke-line"
+      // pathLength=1 chuẩn hoá mọi độ dài về 0..1 nên một keyframe CSS duy nhất
+      // vẽ được mọi đường. Đường nét đứt đã dùng dasharray riêng nên chỉ hiện dần.
+      pathLength={dashed ? undefined : 1}
+      className={cn("stroke-line", dashed ? "dg-fade" : "dg-line")}
     />
   );
 }

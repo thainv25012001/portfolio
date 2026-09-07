@@ -14,7 +14,8 @@ export function Hero({ locale }: HeroProps) {
         <p className="section-label text-brand">{hero.role[locale]}</p>
       </Reveal>
 
-      <Reveal delay={STAGGER}>
+      {/* mask: tên trồi lên từ sau đường kẻ, không bay vào — chất in ấn hơn */}
+      <Reveal delay={STAGGER} variant="mask">
         <h1 className="mt-6 text-display">{PROFILE.name}</h1>
       </Reveal>
 
@@ -22,7 +23,7 @@ export function Hero({ locale }: HeroProps) {
         <hr className="mt-10 border-line" />
       </Reveal>
 
-      <Reveal delay={STAGGER * 3}>
+      <Reveal delay={STAGGER * 3} variant="mask">
         {/* Câu định vị — dòng quan trọng nhất trang, để cỡ lớn hơn body */}
         <p className="mt-10 max-w-2xl text-balance text-xl leading-snug text-foreground md:text-2xl">
           {hero.positioning[locale]}

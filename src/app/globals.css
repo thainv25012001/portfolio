@@ -30,6 +30,10 @@
     --brand-foreground: 0 0% 98%;
 
     --line: 0 0% 87%; /* duong ke grid */
+
+    /* Duong cong easing duy nhat cua site. tailwind.config.ts tro vao bien
+       nay, nen utility `ease-editorial` va CSS thuan dung chung mot dinh nghia. */
+    --ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   /* ---------------------------------------------------------------
@@ -142,7 +146,9 @@
     *::after {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
+      animation-delay: 0s !important;
       transition-duration: 0.01ms !important;
+      transition-delay: 0s !important;
     }
   }
 }
@@ -185,10 +191,230 @@
   .link-underline::after {
     content: "";
     @apply absolute -bottom-0.5 left-0 h-px w-full origin-right scale-x-0 bg-current;
-    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform 0.35s var(--ease-editorial);
   }
   .link-underline:hover::after,
   .link-underline:focus-visible::after {
     @apply origin-left scale-x-100;
+  }
+}
+
+/* ==========================================================================
+   CHUYEN DONG
+   Toan bo animation cua site nam o day. JS chi bat `data-visible` (xem
+   components/ui/reveal.tsx); CSS lo phan con lai. Nho vay SVG do server
+   render van animate duoc, va prefers-reduced-motion xu ly mot cho.
+   ========================================================================== */
+@layer components {
+  :root {
+    --reveal-dur: 0.6s;
+  }
+
+  /* --- Khoi noi dung: mo dan + truot len --- */
+  [data-reveal="fade"] {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity var(--reveal-dur) var(--ease-editorial),
+      transform var(--reveal-dur) var(--ease-editorial);
+    transition-delay: var(--reveal-delay, 0s);
+  }
+
+  [data-reveal="fade"][data-visible] {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* --- Tieu de lon: chu troi len tu sau mot duong ke vo hinh ---
+     clip-path cat theo day khung nen chu khong "bay vao" ma nhu duoc in len. */
+  [data-reveal="mask"] > * {
+    clip-path: inset(0 0 105% 0);
+    transform: translateY(0.35em);
+    transition:
+      clip-path 0.9s var(--ease-editorial),
+      transform 0.9s var(--ease-editorial);
+    transition-delay: var(--reveal-delay, 0s);
+  }
+
+  [data-reveal="mask"][data-visible] > * {
+    clip-path: inset(0 0 -20% 0);
+    transform: none;
+  }
+
+  /* --- Diagram tu ve khi cuon toi ---
+     pathLength="1" tren the <line> giup chuan hoa moi do dai ve 0..1, nen mot
+     keyframe duy nhat dung cho moi duong bat ke dai ngan.
+
+     Moc thoi gian suy ra tu nhau chu khong viet tay tung so: them mot chang
+     chi can them mot calc, khong phai tinh lai ca chuoi. (Truoc day day ve
+     xong o 1.25s nhung mui ten dat o 1.15s - dung kieu so roi thi lech vay.)
+
+     Moi thu neo vao .dg-root: khung do DiagramMotion dat ra va cung la thu
+     bat data-visible. Diagram nam ngoai khung do se hien binh thuong thay vi
+     trang tron. */
+  .dg-root {
+    --dg-fade-delay: 0.1s;
+    --dg-fade-dur: 0.45s;
+    --dg-line-delay: 0.45s;
+    --dg-line-dur: 0.8s;
+    /* Thanh hang doi chay ngay sau khi cac khoi hien xong. */
+    --dg-bus-delay: calc(var(--dg-fade-delay) + var(--dg-fade-dur));
+    --dg-bus-dur: 0.7s;
+    /* Dau mui ten dap xuong dung luc than duong ve xong. */
+    --dg-head-delay: calc(var(--dg-line-delay) + var(--dg-line-dur));
+    --dg-head-dur: 0.3s;
+  }
+
+  /* Trang thai nghi: chi ap dung ben trong .dg-root. */
+  .dg-root .dg-line {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+
+  .dg-root .dg-fade,
+  .dg-root .dg-head {
+    opacity: 0;
+  }
+
+  .dg-root .dg-bus {
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+
+  .dg-root .dg-bus-vertical {
+    transform: scaleY(0);
+    transform-origin: center top;
+  }
+
+  /* Khoi va nhan hien truoc, de day co cai ma noi vao. */
+  .dg-root[data-visible] .dg-fade {
+    animation: dg-appear var(--dg-fade-dur) var(--ease-editorial)
+      var(--dg-fade-delay) forwards;
+  }
+
+  .dg-root[data-visible] .dg-line {
+    animation: dg-draw var(--dg-line-dur) var(--ease-editorial)
+      var(--dg-line-delay) forwards;
+  }
+
+  .dg-root[data-visible] .dg-bus {
+    animation: dg-grow-x var(--dg-bus-dur) var(--ease-editorial)
+      var(--dg-bus-delay) forwards;
+  }
+
+  .dg-root[data-visible] .dg-bus-vertical {
+    animation: dg-grow-y var(--dg-bus-dur) var(--ease-editorial)
+      var(--dg-bus-delay) forwards;
+  }
+
+  .dg-root[data-visible] .dg-head {
+    animation: dg-appear var(--dg-head-dur) var(--ease-editorial)
+      var(--dg-head-delay) forwards;
+  }
+
+  @keyframes dg-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes dg-appear {
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes dg-grow-x {
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  @keyframes dg-grow-y {
+    to {
+      transform: scaleY(1);
+    }
+  }
+
+  /* --- Vach tien do cuon o day header ---
+     Bien --progress do JS ghi vao (section-nav.tsx), CSS lo phan ve. Dung
+     transform chu khong phai width nen browser khong phai reflow moi khung. */
+  .header-progress {
+    position: absolute;
+    inset-inline: 0;
+    bottom: -1px;
+    height: 1px;
+    transform: scaleX(var(--progress, 0));
+    transform-origin: left center;
+    background-color: hsl(var(--brand));
+    /* Vach nay nam trong <header> co backdrop-blur. Doi transform bang bien
+       inline khong phai CSS animation nen Blink khong tu tach lop - thieu
+       will-change thi moi khung cuon se ve lai ca mang backdrop-filter, mot
+       trong nhung duong raster dat nhat. */
+    will-change: transform;
+  }
+
+  /* --- Hover: tro vao mot muc thi lam mo cac muc con lai ---
+     Dung cho danh sach cong nghe: cho thay danh sach co the tro vao duoc,
+     va tach rieng muc dang doc. */
+  .dim-siblings > * {
+    transition: opacity 0.25s var(--ease-editorial);
+  }
+
+  .dim-siblings:hover > *:not(:hover) {
+    opacity: 0.4;
+  }
+
+  /* --- Hover khoi du an: hairline chay ngang duoi tieu de --- */
+  .project-rule {
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.55s var(--ease-editorial);
+  }
+
+  .group:hover .project-rule {
+    transform: scaleX(1);
+  }
+
+  /* --- Tat sach khi nguoi dung yeu cau it chuyen dong ---
+     Khoi blanket o @layer base da ep moi duration/delay ve 0, nen o day chi
+     con viec dua cac trang thai NGHI ve trang thai cuoi. Selector phai thang
+     duoc luat bat animation, vi the dung dung do cu the do: .dg-root[data-visible]
+     chu khong phai .dg-root khong. */
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal],
+    [data-reveal][data-visible],
+    [data-reveal] > *,
+    [data-reveal][data-visible] > * {
+      opacity: 1;
+      transform: none;
+      clip-path: none;
+    }
+
+    .dim-siblings:hover > *:not(:hover) {
+      opacity: 1;
+    }
+
+    .project-rule,
+    .group:hover .project-rule {
+      transform: scaleX(1);
+    }
+
+    .dg-root .dg-line,
+    .dg-root[data-visible] .dg-line,
+    .dg-root .dg-fade,
+    .dg-root[data-visible] .dg-fade,
+    .dg-root .dg-head,
+    .dg-root[data-visible] .dg-head,
+    .dg-root .dg-bus,
+    .dg-root[data-visible] .dg-bus,
+    .dg-root .dg-bus-vertical,
+    .dg-root[data-visible] .dg-bus-vertical {
+      stroke-dasharray: none;
+      stroke-dashoffset: 0;
+      opacity: 1;
+      transform: none;
+      animation: none;
+    }
   }
 }

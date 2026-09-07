@@ -138,7 +138,11 @@ export default function LocaleLayout({
       <body className="min-h-dvh">
         {/* Không có JS thì animation không bao giờ chạy — ép nội dung hiện đầy đủ. */}
         <noscript>
-          <style>{`[data-reveal]{opacity:1!important;transform:none!important}`}</style>
+          {/* Không có JS thì data-visible không bao giờ bật, nên mọi trạng thái
+              nghỉ phải được đưa về trạng thái cuối. Chỉ cần chặn theo hai gốc
+              (Reveal và DiagramMotion) — thêm class động sau này không phải
+              nhớ sửa lại chỗ này. */}
+          <style>{`[data-reveal],[data-reveal] *,.dg-root,.dg-root *{opacity:1!important;transform:none!important;clip-path:none!important;stroke-dashoffset:0!important}`}</style>
         </noscript>
 
         <ThemeProvider
