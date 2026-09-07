@@ -13,3 +13,13 @@ export const PROFILE = {
   /** TODO: domain thật sau khi deploy — dùng cho SEO và Open Graph. */
   siteUrl: "https://your-domain.vercel.app",
 } as const;
+
+/**
+ * Hai con số xuất hiện ở cả phần dự án lẫn phần kinh nghiệm. Gom về đây vì
+ * chúng đã từng lệch nhau: một chỗ ghi "200,000+", chỗ khác "200,000" — hai
+ * mức chính xác khác nhau cho cùng một con số, trên cùng một trang.
+ */
+export const METRICS = {
+  activeUsers: { en: "200,000", vi: "200.000" },
+  dailyMessages: { en: "100,000", vi: "100.000" },
+} as const;

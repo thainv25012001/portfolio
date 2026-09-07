@@ -2,9 +2,9 @@ import Image from "next/image";
 
 import { Slider } from "@/components/ui/slider";
 import { DIAGRAMS } from "@/components/visuals/diagrams";
-import { VIEWBOX_WIDTH } from "@/components/visuals/svg-primitives";
 import { content, type ProjectVisual } from "@/data/content";
 import type { Locale } from "@/lib/i18n";
+import { cn } from "@/lib/utils";
 
 type ProjectVisualsProps = {
   visuals: ProjectVisual[] | undefined;
@@ -46,7 +46,7 @@ function DiagramFigure({
   visual: Extract<ProjectVisual, { kind: "diagram" }>;
   locale: Locale;
 }) {
-  const Diagram = DIAGRAMS[visual.id];
+  const diagram = DIAGRAMS[visual.id];
 
   return (
     <figure>
@@ -54,13 +54,24 @@ function DiagramFigure({
           screen reader thay vì bắt viết alt text cho từng hình, từng ngôn ngữ. */}
       <div
         aria-hidden="true"
-        className="overflow-x-auto border border-line px-5 py-6 md:px-7"
+        className={cn(
+          "overflow-x-auto border border-line px-5 py-6 md:px-7",
+          // Lùi trái đúng bằng cột nhãn + khoảng cách của Section, nên hình
+          // rộng chiếm hết chiều ngang thay vì bị bó trong cột nội dung.
+          diagram.bleed && "md:-ml-bleed",
+        )}
       >
-        {/* Không cho hình co nhỏ quá MIN_DIAGRAM_SCALE, hẹp hơn thì cuộn ngang:
-            chữ trong SVG co theo hình, nhỏ quá là không đọc được. */}
-        <div style={{ minWidth: VIEWBOX_WIDTH * MIN_DIAGRAM_SCALE }}>
-          <Diagram />
-        </div>
+        {/* Thẻ <svg> nằm ở đây, không nằm trong từng diagram: chỉ một chỗ viết
+            viewBox và quyết định bề rộng tối thiểu. Không cho hình co nhỏ quá
+            MIN_DIAGRAM_SCALE — chữ trong SVG co theo hình, nhỏ quá là không
+            đọc được — hẹp hơn thì cuộn ngang. */}
+        <svg
+          viewBox={`0 0 ${diagram.width} ${diagram.height}`}
+          className="w-full"
+          style={{ minWidth: Math.round(diagram.width * MIN_DIAGRAM_SCALE) }}
+        >
+          {diagram.render(locale)}
+        </svg>
       </div>
       {visual.caption && <Caption>{visual.caption[locale]}</Caption>}
     </figure>

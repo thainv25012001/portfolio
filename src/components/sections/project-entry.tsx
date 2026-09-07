@@ -43,7 +43,7 @@ export function ProjectEntry({ project, index, locale }: ProjectEntryProps) {
         {project.title}
       </h3>
 
-      <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-muted-foreground">
+      <p className="mt-3 max-w-2xl text-body text-muted-foreground">
         {project.tagline[locale]}
       </p>
 
@@ -58,7 +58,7 @@ export function ProjectEntry({ project, index, locale }: ProjectEntryProps) {
             <dt className="meta-label md:pt-1">
               {row.label}
             </dt>
-            <dd className="max-w-2xl text-[15px] leading-relaxed">
+            <dd className="max-w-2xl text-body">
               {row.value}
             </dd>
           </div>

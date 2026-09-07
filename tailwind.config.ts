@@ -18,6 +18,10 @@ const config: Config = {
       spacing: {
         frame: "var(--frame-inset)",
         content: "var(--content-inset)",
+        "section-gap": "var(--section-gap)",
+        // Be rong cot nhan + khoang cach: hinh ve rong lui trai dung bang
+        // day la tran het chieu ngang cua section.
+        bleed: "calc(var(--section-label-w) + var(--section-gap))",
       },
       colors: {
         // --- Token chuan shadcn/ui (giu nguyen de `npx shadcn add` chay duoc) ---
@@ -63,6 +67,9 @@ const config: Config = {
         display: ["clamp(2.75rem, 9vw, 5.25rem)", { lineHeight: "0.95" }],
         h2: ["clamp(2rem, 4.5vw, 3rem)", { lineHeight: "1.05" }],
         h3: ["clamp(1.375rem, 2.5vw, 1.75rem)", { lineHeight: "1.2" }],
+        // Co chu than bai. Truoc day viet tay "text-[15px] leading-relaxed"
+        // o sau cho, nam ngoai thang chu nen khong ai tham chieu duoc.
+        body: ["15px", { lineHeight: "1.65" }],
       },
       letterSpacing: { tightest: "-0.045em" },
       borderRadius: { none: "0" },

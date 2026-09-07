@@ -34,9 +34,11 @@ export function Section({
         className,
       )}
     >
-      <div className="grid gap-8 md:grid-cols-[8rem_1fr] md:gap-12 lg:grid-cols-[10rem_1fr] lg:gap-16">
+      <div className="grid gap-8 md:grid-cols-[var(--section-label-w)_1fr] md:gap-y-12 md:gap-x-section-gap">
         <Reveal>
-          <div className="md:sticky md:top-24">
+          {/* Không dính theo cuộn: hình vẽ rộng tràn ngược qua đúng cột này,
+              nhãn dính lại sẽ bị hình đè lên. */}
+          <div>
             <p className="section-label">
               <span className="text-brand">{index}</span>
               <Separator>/</Separator>

@@ -36,15 +36,22 @@ export function Experience({ locale }: ExperienceProps) {
 
               <h3 className="mt-3 text-h3">{item.company}</h3>
 
-              <p className="mt-1.5 text-[15px] text-brand">
+              <p className="mt-1.5 text-body text-brand">
                 {item.role[locale]}
               </p>
+
+              {/* Câu mô tả vai trò — chỉ vài vị trí cần, nên là tuỳ chọn */}
+              {item.summary && (
+                <p className="mt-4 max-w-2xl text-body">
+                  {item.summary[locale]}
+                </p>
+              )}
 
               <ul className="mt-5 max-w-2xl space-y-2.5">
                 {item.points[locale].map((point, pointIndex) => (
                   <li
                     key={pointIndex}
-                    className="relative pl-5 text-[15px] leading-relaxed text-muted-foreground before:absolute before:left-0 before:top-[0.7em] before:h-px before:w-2.5 before:bg-line"
+                    className="relative pl-5 text-body text-muted-foreground before:absolute before:left-0 before:top-[0.7em] before:h-px before:w-2.5 before:bg-line"
                   >
                     {point}
                   </li>

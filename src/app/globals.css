@@ -87,6 +87,24 @@
     }
   }
 
+  /* ---------------------------------------------------------------
+     LUOI CUA SECTION
+     Cot nhan ben trai + khoang cach toi cot noi dung. Dat thanh bien vi
+     hinh ve rong can tran nguoc ra dung bang tong hai gia tri nay de
+     chiem het chieu ngang — xem utility `bleed` trong tailwind.config.ts.
+  --------------------------------------------------------------- */
+  :root {
+    --section-label-w: 8rem;
+    --section-gap: 3rem;
+  }
+
+  @media (min-width: 1024px) {
+    :root {
+      --section-label-w: 10rem;
+      --section-gap: 4rem;
+    }
+  }
+
   html {
     -webkit-text-size-adjust: 100%;
     scroll-behavior: smooth;

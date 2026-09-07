@@ -6,17 +6,26 @@
  *   không hardcode mã màu nào.
  * - Mũi tên vẽ bằng <path> chứ không dùng <marker>, vì marker cần id duy nhất
  *   mà trên trang có nhiều SVG cùng lúc — dễ trùng id.
- * - Toạ độ tính theo hệ viewBox rộng 720, cỡ chữ 14 để khi thu nhỏ vẫn đọc được.
+ * - Cỡ chữ 14 cho nhãn trong khung, 12 cho nhãn rời. Mỗi diagram tự khai bề
+ *   rộng viewBox của mình; DiagramFigure suy ra bề rộng tối thiểu từ đó.
  */
 
-export const VIEWBOX_WIDTH = 720;
+/** Độ dày của thanh hàng đợi/trục sự kiện. Một chỗ duy nhất. */
+const BUS_THICKNESS = 12;
+
+/** Khoảng cách từ nhãn xuống phần tử nó gọi tên. */
+const LABEL_GAP = 8;
+
+/** Kiểu nét đứt cho quan hệ phụ (ghi/đọc bất đồng bộ, luồng phụ trợ). */
+const DASH = "4 4";
 
 type BoxProps = {
   x: number;
   y: number;
   w: number;
   h: number;
-  label: string;
+  /** Bỏ trống để vẽ khung rỗng — dùng cho khung nhóm (xem Frame). */
+  label?: string;
   /** Dòng chữ nhỏ thứ hai bên trong khung. */
   sub?: string;
   /** Tô viền và chữ bằng màu accent — mỗi diagram chỉ nên có một khối như vậy. */
@@ -38,14 +47,16 @@ export function Box({ x, y, w, h, label, sub, accent }: BoxProps) {
         strokeWidth={1}
         className={accent ? "stroke-brand" : "stroke-line"}
       />
-      <text
-        x={cx}
-        y={sub ? cy - 3 : cy + 5}
-        textAnchor="middle"
-        className={`font-mono text-[14px] ${accent ? "fill-brand" : "fill-foreground"}`}
-      >
-        {label}
-      </text>
+      {label && (
+        <text
+          x={cx}
+          y={sub ? cy - 3 : cy + 5}
+          textAnchor="middle"
+          className={`font-mono text-[14px] ${accent ? "fill-brand" : "fill-foreground"}`}
+        >
+          {label}
+        </text>
+      )}
       {sub && (
         <text
           x={cx}
@@ -67,22 +78,19 @@ export function Label({
   children,
   anchor = "start",
   accent,
-  size = 12,
 }: {
   x: number;
   y: number;
   children: string;
   anchor?: "start" | "middle" | "end";
   accent?: boolean;
-  size?: number;
 }) {
   return (
     <text
       x={x}
       y={y}
       textAnchor={anchor}
-      style={{ fontSize: size }}
-      className={`font-mono tracking-[0.08em] ${
+      className={`font-mono text-[12px] tracking-[0.08em] ${
         accent ? "fill-brand" : "fill-muted-foreground"
       }`}
     >
@@ -91,6 +99,73 @@ export function Label({
   );
 }
 
+/**
+ * Khung nhóm: viền rỗng kèm nhãn phía trên. Gom nhiều khối thành một lớp.
+ * Dùng chung đúng một định nghĩa viền với Box, nên đổi style khung là đổi cả hai.
+ */
+export function Frame({
+  x,
+  y,
+  w,
+  h,
+  label,
+  children,
+}: {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  label: string;
+  children?: React.ReactNode;
+}) {
+  return (
+    <g>
+      <Label x={x} y={y - LABEL_GAP}>
+        {label}
+      </Label>
+      <Box x={x} y={y} w={w} h={h} />
+      {children}
+    </g>
+  );
+}
+
+/**
+ * Thanh hàng đợi / trục sự kiện: dải màu accent kèm nhãn.
+ * Sở hữu độ dày và vị trí nhãn, nên ba diagram không còn tự vẽ mỗi nơi một kiểu.
+ */
+export function Bus({
+  x,
+  y,
+  length,
+  label,
+  vertical,
+}: {
+  x: number;
+  y: number;
+  length: number;
+  label: string;
+  /** true = trục dựng đứng (nhãn nằm trên đầu trục). */
+  vertical?: boolean;
+}) {
+  return (
+    <g>
+      <Label x={x} y={y - LABEL_GAP} accent>
+        {label}
+      </Label>
+      <rect
+        x={x}
+        y={y}
+        width={vertical ? BUS_THICKNESS : length}
+        height={vertical ? length : BUS_THICKNESS}
+        className="fill-brand"
+      />
+    </g>
+  );
+}
+
+/** Cạnh đối diện của thanh bus — nơi các mũi tên rẽ ra. */
+export const busFar = (edge: number) => edge + BUS_THICKNESS;
+
 const HEAD = 7;
 
 type ArrowProps = {
@@ -98,6 +173,8 @@ type ArrowProps = {
   y: number;
   length: number;
   accent?: boolean;
+  /** Nét đứt: quan hệ phụ, không phải luồng request chính. */
+  dashed?: boolean;
 };
 
 /**
@@ -110,6 +187,7 @@ function Arrow({
   y,
   length,
   accent,
+  dashed,
   dx,
   dy,
 }: ArrowProps & { dx: number; dy: number }) {
@@ -124,7 +202,14 @@ function Arrow({
 
   return (
     <g className={accent ? "stroke-brand" : "stroke-line"}>
-      <line x1={x} y1={y} x2={baseX} y2={baseY} strokeWidth={1} />
+      <line
+        x1={x}
+        y1={y}
+        x2={baseX}
+        y2={baseY}
+        strokeWidth={1}
+        strokeDasharray={dashed ? DASH : undefined}
+      />
       <path
         d={`M${tipX} ${tipY} L${baseX - wingX} ${baseY - wingY} L${baseX + wingX} ${baseY + wingY} Z`}
         strokeWidth={0}
@@ -155,11 +240,13 @@ export function Line({
   y1,
   x2,
   y2,
+  dashed,
 }: {
   x1: number;
   y1: number;
   x2: number;
   y2: number;
+  dashed?: boolean;
 }) {
   return (
     <line
@@ -168,7 +255,36 @@ export function Line({
       x2={x2}
       y2={y2}
       strokeWidth={1}
+      strokeDasharray={dashed ? DASH : undefined}
       className="stroke-line"
     />
   );
+}
+
+/**
+ * Một dãy phần tử cách đều nhau trên MỘT trục — dùng được cho cả hàng ngang
+ * lẫn cột dọc, nên tham số đặt tên trung tính (start/size) chứ không phải x/w.
+ *
+ * Trả về toạ độ suy ra từ một nguồn duy nhất, nên mũi tên, thanh bus và đường
+ * hồi tiếp không thể lệch khỏi các khối nữa.
+ */
+export function lane({
+  start,
+  size,
+  gap,
+  count,
+}: {
+  start: number;
+  size: number;
+  gap: number;
+  count: number;
+}) {
+  const at = (i: number) => start + i * (size + gap);
+  return {
+    at,
+    mid: (i: number) => at(i) + size / 2,
+    /** Từ mép đầu của phần tử đầu tới mép cuối của phần tử cuối. */
+    span: at(count - 1) + size - start,
+    size,
+  };
 }

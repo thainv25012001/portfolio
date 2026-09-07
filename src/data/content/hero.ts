@@ -17,8 +17,8 @@ export const hero: Hero = {
     vi: "Full-Stack Developer tại AIVN · Harrisburg, PA",
   },
   positioning: {
-    en: "I build event-driven web platforms — Node.js services, React front ends, and the message queues that keep them in sync.",
-    vi: "Tôi xây nền tảng web hướng sự kiện — service Node.js, giao diện React, và những hàng đợi thông điệp giữ chúng đồng bộ.",
+    en: "One of the first engineers on an AI education startup — I work across the backend services, the front end, and the message queues in between.",
+    vi: "Một trong những thành viên đầu tiên của một startup giáo dục AI — tôi làm xuyên suốt từ service backend, giao diện, tới những hàng đợi thông điệp ở giữa.",
   },
   primaryCta: { en: "View projects", vi: "Xem dự án" },
   secondaryCta: { en: "Download CV", vi: "Tải CV" },

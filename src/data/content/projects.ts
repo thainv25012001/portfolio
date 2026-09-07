@@ -1,13 +1,19 @@
 import type { L } from "@/lib/i18n";
 
+import { METRICS } from "./profile.ts";
+
 /* ---- 4. Projects --------------------------------------------------------
-   Ba dự án lấy thẳng từ resume. Phần "vấn đề" là cách tôi diễn đạt lại bối
-   cảnh — bạn đọc lại xem có đúng thực tế không rồi sửa cho khớp.
-   Không có con số nào tôi tự bịa: chỉ dùng số có sẵn trong resume.
+   Dự án AIVN: nội dung do chính bạn viết, tôi chỉ diễn đạt lại cho gọn.
+   Hai dự án KYC và Marketplace: phần "vấn đề" vẫn là cách tôi suy ra từ
+   resume — bạn đọc lại xem có đúng thực tế không rồi sửa cho khớp.
+   Mọi con số đều lấy từ resume, không có số nào tự bịa.
    ----------------------------------------------------------------------- */
 
 /** Id của hình vẽ dựng sẵn — xem src/components/visuals/diagrams.tsx */
-export type DiagramId = "ai-pipeline" | "kyc-flow" | "kafka-orders";
+export type DiagramId =
+  | "aivn-architecture"
+  | "kyc-flow"
+  | "kafka-orders";
 
 /**
  * Một hình minh hoạ của dự án.
@@ -79,44 +85,30 @@ export const projects: Projects = {
       title: "AIVN E-learning Platform",
       period: { en: "2024 — Present", vi: "2024 — nay" },
       tagline: {
-        en: "E-learning platform for Vietnamese students and teachers, with AI grading, question generation and speaking assessment.",
-        vi: "Nền tảng e-learning cho học sinh và giáo viên Việt Nam, có chấm điểm bằng AI, tự sinh câu hỏi và đánh giá kỹ năng nói.",
+        en: "Startup e-learning platform for Vietnamese students and teachers — AI grading, question generation and speaking assessment.",
+        vi: "Nền tảng e-learning của một startup, cho học sinh và giáo viên Việt Nam — chấm điểm bằng AI, tự sinh câu hỏi và đánh giá kỹ năng nói.",
       },
       problem: {
-        en: "Grading speaking practice and writing question banks by hand does not scale to a platform with 200,000 active users.",
-        vi: "Chấm bài nói và soạn ngân hàng câu hỏi thủ công không thể theo kịp một nền tảng có 200.000 người dùng hoạt động.",
+        en: "Handling student interaction by hand collapses at scale: it eats a teacher's day, and there is no accurate way to assess progress or manage a cohort that size.",
+        vi: "Quản lý tương tác với học sinh một cách thủ công không trụ được ở quy mô lớn: ngốn gần hết thời gian của giáo viên, và không có cách nào đánh giá năng lực hay quản lý một lượng học sinh lớn cho chính xác.",
       },
       solution: {
-        en: "Built ExpressJS APIs and React features that hand this work to Python AI services — speaking assessment, difficulty grading, automatic question generation — connected over RabbitMQ, with Socket.IO pushing results back to the client as they land.",
-        vi: "Xây API ExpressJS và tính năng React đẩy phần việc đó sang các service AI viết bằng Python — đánh giá kỹ năng nói, chấm độ khó, tự sinh câu hỏi — nối với nhau qua RabbitMQ, và dùng Socket.IO trả kết quả về client ngay khi có.",
+        en: "Built a system meant to hold load: ExpressJS APIs and React features that hand grading and ability assessment off to Python AI services over RabbitMQ, with Socket.IO pushing results and notifications back as they land. On top of that, a management layer — oversight and monitoring for institutions, AI-assisted prep so teachers spend less time building material, and a simpler path through it for students.",
+        vi: "Xây một hệ thống chịu được tải: API ExpressJS và tính năng React đẩy phần chấm điểm, đánh giá năng lực sang các service AI viết bằng Python qua RabbitMQ, dùng Socket.IO trả kết quả và thông báo về ngay khi có. Trên nền đó là lớp quản lý — tổ chức giáo dục theo dõi và giám sát được, giáo viên soạn bài nhanh hơn nhờ AI, học sinh học dễ hơn.",
       },
       result: {
-        en: "Serves 200,000 active users, with around 100,000 messages a day moving between services.",
-        vi: "Phục vụ 200.000 người dùng hoạt động, khoảng 100.000 thông điệp mỗi ngày chạy giữa các service.",
+        en: `Serves ${METRICS.activeUsers.en} active users, with around ${METRICS.dailyMessages.en} messages a day moving between services. Schools and teachers rate it highly, students use it by choice, and the platform now runs competitions at city and national scale.`,
+        vi: `Phục vụ ${METRICS.activeUsers.vi} người dùng hoạt động, khoảng ${METRICS.dailyMessages.vi} thông điệp mỗi ngày chạy giữa các service. Các tổ chức và giáo viên đánh giá cao, học sinh chủ động dùng, và nền tảng giờ tổ chức các cuộc thi ở cấp thành phố và toàn quốc.`,
       },
       tags: ["Express.js", "React", "RabbitMQ", "Socket.IO", "Python AI"],
       visuals: [
         {
           kind: "diagram",
-          id: "ai-pipeline",
+          id: "aivn-architecture",
           caption: {
-            en: "Speaking assessment, difficulty grading and question generation run as Python services behind the queue.",
-            vi: "Đánh giá kỹ năng nói, chấm độ khó và sinh câu hỏi chạy như các service Python phía sau hàng đợi.",
+            en: "Requests come in through one API layer; the queue keeps the heavy work — AI grading, background jobs, notifications — off the request path, and Socket.IO pushes results back to the client.",
+            vi: "Request đi vào qua một lớp API; hàng đợi gánh phần việc nặng — chấm điểm bằng AI, job nền, thông báo — ra khỏi luồng request, và Socket.IO đẩy kết quả về client.",
           },
-        },
-        {
-          kind: "image",
-          src: "/work/examdee/student-home.png",
-          alt: { en: "Student home", vi: "Trang chủ học sinh" },
-          caption: { en: "Student home", vi: "Trang chủ học sinh" },
-          ratio: "1918 / 911",
-        },
-        {
-          kind: "image",
-          src: "/work/examdee/talking.png",
-          alt: { en: "Talking to AI", vi: "Nói chuyện với AI" },
-          caption: { en: "Talking to AI", vi: "Nói chuyện với AI" },
-          ratio: "1918 / 1069",
         },
       ],
     },
