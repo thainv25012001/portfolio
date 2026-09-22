@@ -75,6 +75,12 @@ export type Ui = {
   gallery: L;
   prevSlide: L;
   nextSlide: L;
+  contact: L;
+  all: L;
+  viewDetail: L;
+  backToWork: L;
+  projectLinks: L;
+  resume: L;
 };
 
 export const ui: Ui = {
@@ -84,4 +90,12 @@ export const ui: Ui = {
   gallery: { en: "Project screenshots", vi: "Ảnh màn hình dự án" },
   prevSlide: { en: "Previous image", vi: "Ảnh trước" },
   nextSlide: { en: "Next image", vi: "Ảnh sau" },
+  // Nhãn nút CTA — tách riêng khỏi contact.heading (tiêu đề section) vì hai
+  // chuỗi này phục vụ mục đích khác nhau và có thể lệch nhau khi sửa sau này.
+  contact: { en: "Contact", vi: "Liên hệ" },
+  all: { en: "All", vi: "Tất cả" },
+  viewDetail: { en: "View detail", vi: "Xem chi tiết" },
+  backToWork: { en: "Back to work", vi: "Quay lại dự án" },
+  projectLinks: { en: "Links", vi: "Liên kết" },
+  resume: { en: "Resume", vi: "Resume" },
 };

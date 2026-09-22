@@ -19,16 +19,15 @@ export const techStack: TechStack = {
   groups: [
     {
       id: "languages",
-      label: { en: "Languages & Frameworks", vi: "Ngôn ngữ & Framework" },
+      label: { en: "Languages", vi: "Ngôn ngữ" },
       note: { en: "Daily driver", vi: "Dùng hằng ngày" },
-      items: [
-        "Node.js",
-        "Express.js",
-        "NestJS",
-        "React",
-        "TypeScript",
-        "JavaScript",
-      ],
+      items: ["TypeScript", "JavaScript"],
+    },
+    {
+      id: "frameworks",
+      label: { en: "Frameworks", vi: "Framework" },
+      note: { en: "Built with daily", vi: "Làm việc hằng ngày" },
+      items: ["Node.js", "Express.js", "NestJS", "React"],
     },
     {
       id: "databases",

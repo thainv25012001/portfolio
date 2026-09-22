@@ -1,6 +1,6 @@
 /* --------------------------------------------------------------------------
    THÔNG TIN CÁ NHÂN
-   Lấy từ Thai-Nguyen-Resume.docx. Đây là file nên sửa đầu tiên.
+   Lấy từ resume. Đây là file nên sửa đầu tiên.
    -------------------------------------------------------------------------- */
 export const PROFILE = {
   name: "Nguyen Viet Thai",
@@ -8,8 +8,8 @@ export const PROFILE = {
   email: "thainv2501@gmail.com",
   /** Username LinkedIn (chỉ username, không kèm https://). */
   linkedin: "thainv2501",
-  /** File CV trong /public — sinh từ Thai-Nguyen-Resume.docx. */
-  cvUrl: "/cv.pdf",
+  /** File resume trong /public. Bản .docx gốc KHÔNG nằm trong repo. */
+  resumeUrl: "/resume.pdf",
   /** TODO: domain thật sau khi deploy — dùng cho SEO và Open Graph. */
   siteUrl: "https://your-domain.vercel.app",
 } as const;

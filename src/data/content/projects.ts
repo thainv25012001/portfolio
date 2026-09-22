@@ -59,6 +59,25 @@ export type Project = {
    * án chỉ có chữ, layout vẫn đúng.
    */
   visuals?: ProjectVisual[];
+  /**
+   * Link ra sản phẩm thật hoặc mã nguồn. Tuỳ chọn — dự án của khách hàng
+   * thường không public. Rỗng thì trang detail KHÔNG vẽ khối links, nên
+   * không bao giờ lòi ra một mảng trống.
+   *
+   * TODO(owner): bạn có yêu cầu gắn link sản phẩm / GitHub cho các dự án,
+   * nhưng HIỆN KHÔNG DỰ ÁN NÀO có `links` — cả bốn mục bên dưới đều để
+   * trống. Không có URL nào tra ra được từ resume, và tôi không bịa link.
+   * Bạn điền vào đây theo mẫu:
+   *   links: [
+   *     { kind: "live", href: "https://...",
+   *       label: { en: "Live site", vi: "Sản phẩm thật" } },
+   *     { kind: "repo", href: "https://github.com/...",
+   *       label: { en: "Source", vi: "Mã nguồn" } },
+   *   ]
+   * Dự án nào không công khai được thì cứ bỏ trống — trang detail tự ẩn
+   * khối links, không lòi ra mục rỗng.
+   */
+  links?: { label: L; href: string; kind: "live" | "repo" | "doc" }[];
 };
 
 export type Projects = {
@@ -177,20 +196,33 @@ export const projects: Projects = {
       ],
     },
 
-    /* Muốn thêm dự án hackathon Hedera Guardian (Top 5, 2023) thì bỏ comment
-       khối dưới và điền nội dung thật. Chưa có `visuals` thì khối vẫn hiển thị
-       bình thường, chỉ là không có hình.
-
+    /* TODO(owner): tagline/problem/solution của mục hedera-esg dưới đây được
+       viết ra KHÔNG có nguồn thật — chỉ suy ra từ tên chính thức của hackathon
+       ("Crafting ESG Solutions on Hedera Guardian"), không có chi tiết kỹ
+       thuật nào khác để đối chiếu. Bạn PHẢI đọc lại và xác nhận (hoặc viết lại
+       cho đúng thực tế) trước khi deploy — đừng để nội dung chưa kiểm chứng
+       lên trang công khai. */
     {
       id: "hedera-esg",
       title: "ESG on Hedera Guardian",
       period: { en: "2023", vi: "2023" },
-      tagline: { en: "", vi: "" },
-      problem: { en: "", vi: "" },
-      solution: { en: "", vi: "" },
-      result: { en: "Top 5 — Crafting ESG Solutions on Hedera Guardian hackathon.", vi: "Top 5 — hackathon Crafting ESG Solutions on Hedera Guardian." },
-      tags: [],
+      tagline: {
+        en: "Hackathon entry building an ESG data solution on Hedera Guardian — top 5 finish.",
+        vi: "Sản phẩm hackathon xây giải pháp dữ liệu ESG trên Hedera Guardian — lọt top 5.",
+      },
+      problem: {
+        en: "ESG reporting is easy to claim and hard to verify — data usually comes from a single party with no independently checkable trail.",
+        vi: "Báo cáo ESG dễ công bố nhưng khó kiểm chứng — dữ liệu thường chỉ đến từ một phía, không có dấu vết để bên khác kiểm tra độc lập.",
+      },
+      solution: {
+        en: "Prototyped an ESG data solution on Hedera Guardian during the hackathon.",
+        vi: "Dựng thử một giải pháp dữ liệu ESG trên Hedera Guardian trong khuôn khổ hackathon.",
+      },
+      result: {
+        en: "Top 5 — Crafting ESG Solutions on Hedera Guardian hackathon.",
+        vi: "Top 5 — hackathon Crafting ESG Solutions on Hedera Guardian.",
+      },
+      tags: ["Hedera Guardian", "Blockchain", "ESG"],
     },
-    */
   ],
 };

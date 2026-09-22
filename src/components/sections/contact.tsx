@@ -1,4 +1,4 @@
-import { Section } from "@/components/ui/section";
+import { Screen } from "@/components/ui/screen";
 import { Reveal, STAGGER } from "@/components/ui/reveal";
 import { content, PROFILE } from "@/data/content";
 import type { Locale } from "@/lib/i18n";
@@ -9,9 +9,9 @@ export function Contact({ locale }: ContactProps) {
   const { contact } = content;
 
   return (
-    <Section id="contact" index="05" heading={contact.heading[locale]}>
+    <Screen id="contact" index="05" heading={contact.heading[locale]}>
       <Reveal>
-        <p className="max-w-xl text-lg leading-relaxed text-muted-foreground">
+        <p className="max-w-3xl text-body text-muted-foreground">
           {contact.blurb[locale]}
         </p>
       </Reveal>
@@ -20,7 +20,7 @@ export function Contact({ locale }: ContactProps) {
         {/* Email cỡ lớn — điểm kết của trang, cũng là CTA chính */}
         <a
           href={`mailto:${PROFILE.email}`}
-          className="mt-10 block break-words font-display text-[clamp(1.75rem,6vw,3.5rem)] leading-none tracking-tightest transition-colors duration-300 ease-editorial hover:text-brand"
+          className="mt-10 block break-words font-pixel text-[clamp(1.75rem,6vw,3.5rem)] leading-none tracking-tightest transition-colors duration-300 ease-editorial hover:text-brand"
         >
           {PROFILE.email}
         </a>
@@ -42,6 +42,6 @@ export function Contact({ locale }: ContactProps) {
           ))}
         </ul>
       </Reveal>
-    </Section>
+    </Screen>
   );
 }

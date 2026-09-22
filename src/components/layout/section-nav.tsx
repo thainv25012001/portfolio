@@ -97,7 +97,7 @@ export function SectionNav({ items }: { items: Item[] }) {
                   href={`#${item.id}`}
                   aria-current={isActive ? "true" : undefined}
                   className={cn(
-                    "link-underline text-[13px] transition-colors duration-300 ease-editorial",
+                    "link-underline font-pixel text-label uppercase transition-colors duration-300 ease-editorial",
                     isActive
                       ? "text-brand"
                       : "text-muted-foreground hover:text-foreground",

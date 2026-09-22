@@ -34,6 +34,16 @@
     /* Duong cong easing duy nhat cua site. tailwind.config.ts tro vao bien
        nay, nen utility `ease-editorial` va CSS thuan dung chung mot dinh nghia. */
     --ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
+
+    /* Do day vien va do lech bong — mot cho duy nhat, moi primitive doc tu day. */
+    --pixel-border: 3px;
+    --pixel-shadow: 4px 4px 0 0 hsl(var(--foreground));
+    --pixel-shadow-sm: 2px 2px 0 0 hsl(var(--foreground));
+
+    /* Do dam cua luoi nen. Tach thanh bien vi hai theme chiu duoc muc khac
+       nhau: cham den tren nen sang lo hon cham sang tren nen toi. */
+    --field-dot: 0.04;
+    --field-accent: 0.03;
   }
 
   /* ---------------------------------------------------------------
@@ -42,6 +52,9 @@
      dat 3.8:1 - khong du AA cho chu nho.
   --------------------------------------------------------------- */
   .dark {
+    --field-dot: 0.055;
+    --field-accent: 0.04;
+
     --background: 0 0% 4%; /* #0A0A0A */
     --foreground: 0 0% 93%; /* #EDEDED */
 
@@ -74,38 +87,16 @@
 
   /* ---------------------------------------------------------------
      LE NGANG
-     Hai gia tri nay dinh nghia toan bo can le cua site:
-       --frame-inset    vi tri hai duong ke doc, tinh tu mep container
-       --content-inset  le cua chu, luon lon hon de khong dinh duong ke
+     --content-inset dinh nghia le cua chu, dung boi .shell (xem duoi day).
      Sua o day la doi ca header, main lan footer cung luc.
   --------------------------------------------------------------- */
   :root {
-    --frame-inset: 1rem;
     --content-inset: 2rem;
   }
 
   @media (min-width: 768px) {
     :root {
-      --frame-inset: 2rem;
       --content-inset: 4rem;
-    }
-  }
-
-  /* ---------------------------------------------------------------
-     LUOI CUA SECTION
-     Cot nhan ben trai + khoang cach toi cot noi dung. Dat thanh bien vi
-     hinh ve rong can tran nguoc ra dung bang tong hai gia tri nay de
-     chiem het chieu ngang — xem utility `bleed` trong tailwind.config.ts.
-  --------------------------------------------------------------- */
-  :root {
-    --section-label-w: 8rem;
-    --section-gap: 3rem;
-  }
-
-  @media (min-width: 1024px) {
-    :root {
-      --section-label-w: 10rem;
-      --section-gap: 4rem;
     }
   }
 
@@ -120,11 +111,11 @@
     text-rendering: optimizeLegibility;
   }
 
-  /* Heading dung serif, tracking chat, khong bao gio in dam gia. */
+  /* Heading dung font pixel, tracking chat, khong bao gio in dam gia. */
   h1,
   h2,
   h3 {
-    @apply font-display font-normal tracking-tightest;
+    @apply font-pixel font-normal tracking-tightest;
   }
 
   /* Vong focus dung mau accent, khong dung outline mac dinh cua browser. */
@@ -157,8 +148,6 @@
   /* ------------------------------------------------------------------
      Can le ngang. Chi mot lop duy nhat: header, main va footer deu dung
      .shell nen ten o header luon thang cot voi ten o hero.
-     Vi tri hai duong ke doc dung --frame-inset (xem grid-lines.tsx), luon
-     nho hon --content-inset de chu khong bao gio dinh vao duong ke.
   ------------------------------------------------------------------ */
   .shell {
     @apply mx-auto w-full max-w-shell px-content;
@@ -167,7 +156,7 @@
   /* Thang chu nho, chu hoa, gian rong - dung cho moi nhan phu tren site.
      .section-label gian rong hon vi dung lam tieu de cot ben trai section. */
   .meta-label {
-    @apply font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground;
+    @apply font-mono text-meta uppercase text-muted-foreground;
   }
 
   .section-label {
@@ -336,6 +325,70 @@
     }
   }
 
+  /* --- Nen luoi pixel ---
+     Hai lop cham troi nguoc chieu nhau, dat duoi toan bo noi dung.
+
+     Chi animate `transform`, va moi lop co `will-change: transform`, nen Blink
+     tach chung thanh lop compositor rieng: khong repaint, khong cham vao
+     main-thread. Day la ly do chon cach nay thay vi canvas — nen dong la thu
+     dat nhat co the them vao mot trang, vi no phu kin viewport.
+
+     Hai chu ky 90s va 140s khong chia het cho nhau, nen hinh khong bao gio lap
+     lai y het — mat khong bat duoc nhip.
+
+     Moi keyframe dich dung MOT o luoi nen vong lap lien mach.
+
+     Lop phai rong hon viewport de luc troi khong lo mep, nhung chi can hon
+     dung bang quang duong dich xa nhat (96px cua lop accent). Truoc day day la
+     `inset: -50%`, tuc gap doi viewport moi chieu — gap 4 lan dien tich, khoang
+     39 MB texture cho hai lop o 1440x900, de thua cho mot chuyen dong 96px.
+     128px la du, va giam con khoang 15 MB. */
+  .pixel-field {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .pixel-field::before,
+  .pixel-field::after {
+    content: "";
+    position: absolute;
+    inset: -128px;
+    will-change: transform;
+  }
+
+  .pixel-field::before {
+    background-image: radial-gradient(
+      hsl(var(--foreground) / var(--field-dot)) 1px,
+      transparent 1px
+    );
+    background-size: 32px 32px;
+    animation: field-drift 90s linear infinite;
+  }
+
+  .pixel-field::after {
+    background-image: radial-gradient(
+      hsl(var(--brand) / var(--field-accent)) 1px,
+      transparent 1px
+    );
+    background-size: 96px 96px;
+    animation: field-drift-accent 140s linear infinite;
+  }
+
+  @keyframes field-drift {
+    to {
+      transform: translate3d(32px, 32px, 0);
+    }
+  }
+
+  @keyframes field-drift-accent {
+    to {
+      transform: translate3d(-96px, 96px, 0);
+    }
+  }
+
   /* --- Vach tien do cuon o day header ---
      Bien --progress do JS ghi vao (section-nav.tsx), CSS lo phan ve. Dung
      transform chu khong phai width nen browser khong phai reflow moi khung. */
@@ -376,6 +429,30 @@
     transform: scaleX(1);
   }
 
+  /* --- Bam la lun xuong: dich dung bang do lech bong roi bo bong ---
+     Day la thu lam nut "ra nut". Dung transform chu khong phai margin nen
+     khong lam nhay layout xung quanh. */
+  .pixel-press {
+    transition:
+      transform 0.06s linear,
+      box-shadow 0.06s linear;
+  }
+
+  .pixel-press:active {
+    transform: translate(4px, 4px);
+    box-shadow: none;
+    /* Khi nut vua :active vua :focus-visible (giu Space/Enter sau khi Tab
+       toi), rule ring cua Tailwind (.focus-visible\:ring-4:focus-visible)
+       hoa specificity voi rule nay va thang nho dung sau trong source. Box-
+       shadow cua no doc tu var(--tw-shadow, 0 0 #0000) — mot custom property
+       rieng, khong nam trong shorthand box-shadow nen khai "box-shadow: none"
+       o tren khong dong duoc no. .shadow-pixel van dang set --tw-shadow thanh
+       bong pixel cung, nen neu khong xoa o day no se ro ri nguoc lai vao box-
+       shadow cua rule ring. Phai reset ca hai thi bong moi that su bien mat
+       khi bam bang ban phim. */
+    --tw-shadow: 0 0 #0000;
+  }
+
   /* --- Tat sach khi nguoi dung yeu cau it chuyen dong ---
      Khoi blanket o @layer base da ep moi duration/delay ve 0, nen o day chi
      con viec dua cac trang thai NGHI ve trang thai cuoi. Selector phai thang
@@ -391,6 +468,15 @@
       clip-path: none;
     }
 
+    /* Luoi nen DUNG YEN chu khong bien mat: no la ket cau, khong phai chuyen
+       dong mang nghia. Bo luon will-change de khong giu hai lop compositor
+       cho mot thu khong con doi. */
+    .pixel-field::before,
+    .pixel-field::after {
+      animation: none !important;
+      will-change: auto;
+    }
+
     .dim-siblings:hover > *:not(:hover) {
       opacity: 1;
     }
@@ -398,6 +484,12 @@
     .project-rule,
     .group:hover .project-rule {
       transform: scaleX(1);
+    }
+
+    /* Transform giu nguyen vi no la affordance (nut lun xuong khi bam), chu
+       khong phai trang tri — chi tat transition mot minh. */
+    .pixel-press {
+      transition: none;
     }
 
     .dg-root .dg-line,

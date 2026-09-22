@@ -23,6 +23,9 @@ import { locales, type Locale } from "../src/lib/i18n.ts";
 const WIDTH = 1200;
 const HEIGHT = 630;
 
+/** Khớp fontWeight của token `display` trong tailwind.config.ts. */
+const DISPLAY_WEIGHT = 700;
+
 /**
  * Bảng màu của ảnh OG, khớp với token trong globals.css.
  * Đổi THEME sang "dark" nếu muốn thẻ social nền đen thay vì nền sáng.
@@ -153,9 +156,12 @@ function template(locale: Locale) {
           style: {
             display: "flex",
             fontFamily: "Display",
-            fontSize: 96,
-            lineHeight: 1.05,
-            letterSpacing: -3,
+            // Khớp token `display`: lineHeight 0.92, letterSpacing 0.01em.
+            // Tracking ÂM là của thiết kế serif cũ — Handjet là font điểm ảnh,
+            // bóp âm là các cột chữ dính vào nhau.
+            fontSize: 112,
+            lineHeight: 0.92,
+            letterSpacing: 1,
             color: COLORS.fg,
           },
         },
@@ -209,8 +215,12 @@ async function main() {
     .concat(PROFILE.email)
     .join(" ");
 
+  // Handjet, không phải Playfair Display: thẻ social là thứ người ta nhìn
+  // thấy TRƯỚC khi mở site, nên nó phải mang đúng nhận diện pixel của trang
+  // chứ không phải serif của thiết kế cũ. Handjet có subset `vietnamese`,
+  // nên chữ có dấu trong tên/tiêu đề không ra ô vuông.
   const [displayFont, bodyFont] = await Promise.all([
-    loadGoogleFont("Playfair Display", headingText, 500),
+    loadGoogleFont("Handjet", headingText, DISPLAY_WEIGHT),
     loadGoogleFont("Inter", bodyText, 400),
   ]);
 
@@ -219,7 +229,7 @@ async function main() {
       width: WIDTH,
       height: HEIGHT,
       fonts: [
-        { name: "Display", data: displayFont, weight: 500, style: "normal" },
+        { name: "Display", data: displayFont, weight: DISPLAY_WEIGHT, style: "normal" },
         { name: "Body", data: bodyFont, weight: 400, style: "normal" },
       ],
     });

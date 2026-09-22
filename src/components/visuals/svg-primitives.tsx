@@ -13,7 +13,7 @@
 import { cn } from "@/lib/utils";
 
 /** Độ dày của thanh hàng đợi/trục sự kiện. Một chỗ duy nhất. */
-const BUS_THICKNESS = 12;
+const BUS_THICKNESS = 14;
 
 /** Khoảng cách từ nhãn xuống phần tử nó gọi tên. */
 const LABEL_GAP = 8;
@@ -48,7 +48,7 @@ export function Box({ x, y, w, h, label, sub, accent }: BoxProps) {
         width={w}
         height={h}
         fill="none"
-        strokeWidth={1}
+        strokeWidth={2}
         className={accent ? "stroke-brand" : "stroke-line"}
       />
       {label && (
@@ -177,7 +177,7 @@ export function Bus({
 /** Cạnh đối diện của thanh bus — nơi các mũi tên rẽ ra. */
 export const busFar = (edge: number) => edge + BUS_THICKNESS;
 
-const HEAD = 7;
+const HEAD = 9;
 
 type ArrowProps = {
   x: number;
@@ -218,7 +218,7 @@ function Arrow({
         y1={y}
         x2={baseX}
         y2={baseY}
-        strokeWidth={1}
+        strokeWidth={2}
         strokeDasharray={dashed ? DASH : undefined}
         pathLength={dashed ? undefined : 1}
         className={dashed ? "dg-fade" : "dg-line"}
@@ -267,7 +267,7 @@ export function Line({
       y1={y1}
       x2={x2}
       y2={y2}
-      strokeWidth={1}
+      strokeWidth={2}
       strokeDasharray={dashed ? DASH : undefined}
       // pathLength=1 chuẩn hoá mọi độ dài về 0..1 nên một keyframe CSS duy nhất
       // vẽ được mọi đường. Đường nét đứt đã dùng dasharray riêng nên chỉ hiện dần.
