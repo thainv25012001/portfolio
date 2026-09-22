@@ -13,12 +13,12 @@ export type Hero = {
 export const hero: Hero = {
   role: { en: "Full-Stack Developer", vi: "Full-Stack Developer" },
   currentRole: {
-    en: "Full-Stack Developer at AIVN · Harrisburg, PA",
-    vi: "Full-Stack Developer tại AIVN · Harrisburg, PA",
+    en: "Full-Stack Developer",
+    vi: "Full-Stack Developer",
   },
   positioning: {
-    en: "One of the first engineers on an AI education startup — I work across the backend services, the front end, and the message queues in between.",
-    vi: "Một trong những thành viên đầu tiên của một startup giáo dục AI — tôi làm xuyên suốt từ service backend, giao diện, tới những hàng đợi thông điệp ở giữa.",
+    en: "Full Stack JavaScript Developer specializing in MERN Stack, PERN Stack, and Next.js, building fast, scalable, and modern web applications with clean UI and high-performance backend systems.",
+    vi: "Full Stack JavaScript Developer specializing in MERN Stack, PERN Stack, and Next.js, building fast, scalable, and modern web applications with clean UI and high-performance backend systems.",
   },
   primaryCta: { en: "View projects", vi: "Xem dự án" },
   secondaryCta: { en: "Download CV", vi: "Tải CV" },
