@@ -381,6 +381,20 @@
     transform: scaleX(1);
   }
 
+  /* --- Bam la lun xuong: dich dung bang do lech bong roi bo bong ---
+     Day la thu lam nut "ra nut". Dung transform chu khong phai margin nen
+     khong lam nhay layout xung quanh. */
+  .pixel-press {
+    transition:
+      transform 0.06s linear,
+      box-shadow 0.06s linear;
+  }
+
+  .pixel-press:active {
+    transform: translate(4px, 4px);
+    box-shadow: none;
+  }
+
   /* --- Tat sach khi nguoi dung yeu cau it chuyen dong ---
      Khoi blanket o @layer base da ep moi duration/delay ve 0, nen o day chi
      con viec dua cac trang thai NGHI ve trang thai cuoi. Selector phai thang
@@ -403,6 +417,12 @@
     .project-rule,
     .group:hover .project-rule {
       transform: scaleX(1);
+    }
+
+    /* Transform giu nguyen vi no la affordance (nut lun xuong khi bam), chu
+       khong phai trang tri — chi tat transition mot minh. */
+    .pixel-press {
+      transition: none;
     }
 
     .dg-root .dg-line,
