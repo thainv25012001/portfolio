@@ -249,15 +249,18 @@ keyboard users only — a mouse click never triggers both `:active` and
   change fixes both the visual hierarchy and the heading tree.
 - **Screens centre with `my-auto` on the inner block, not
   `justify-center` on the flex column.** They are `min-h-dvh`, not
-  `h-dvh`, and several of them are legitimately taller than the viewport
-  (Stack with a category open, Work, Experience — the home page measures
-  ~7.4 screens of content for 6 sections). When a column flex container's
-  content overflows, `justify-center` distributes the overflow to *both*
-  ends, and the overflow above the start edge cannot be scrolled to — the
-  top of the section is simply unreachable and gets clipped. An `auto`
+  `h-dvh`, so the section's flex container always grows to fit its content
+  instead of clipping it — several are legitimately taller than the
+  viewport (Stack with a category open, Work, Experience — the home page
+  measures ~7.4 screens of content for 6 sections). Because the container
+  has no fixed height to overflow, `justify-center` here would never
+  actually get overflow to distribute past the start edge — that failure
+  mode needs a capped height like `h-dvh`, which this code doesn't use. The
+  `my-auto` choice is not a fix for that non-issue; it's just a simpler
+  rule to reason about than flex alignment plus a min-height: an `auto`
   block margin centres identically while there is free space and collapses
   to `0` when there isn't, so a tall screen falls back to top-aligned and
-  scrolls normally. Vertical padding is `py-20 md:py-24`, down from
+  scrolls normally either way. Vertical padding is `py-20 md:py-24`, down from
   `py-24 md:py-32`, to buy back height on the screens that overflow
   without leaving the short ones looking empty. `Hero` is not a `Screen`
   (it has no index/heading) but repeats the same pattern deliberately.
