@@ -39,6 +39,11 @@
     --pixel-border: 3px;
     --pixel-shadow: 4px 4px 0 0 hsl(var(--foreground));
     --pixel-shadow-sm: 2px 2px 0 0 hsl(var(--foreground));
+
+    /* Do dam cua luoi nen. Tach thanh bien vi hai theme chiu duoc muc khac
+       nhau: cham den tren nen sang lo hon cham sang tren nen toi. */
+    --field-dot: 0.04;
+    --field-accent: 0.03;
   }
 
   /* ---------------------------------------------------------------
@@ -47,6 +52,9 @@
      dat 3.8:1 - khong du AA cho chu nho.
   --------------------------------------------------------------- */
   .dark {
+    --field-dot: 0.055;
+    --field-accent: 0.04;
+
     --background: 0 0% 4%; /* #0A0A0A */
     --foreground: 0 0% 93%; /* #EDEDED */
 
@@ -317,6 +325,65 @@
     }
   }
 
+  /* --- Nen luoi pixel ---
+     Hai lop cham troi nguoc chieu nhau, dat duoi toan bo noi dung.
+
+     Chi animate `transform`, va moi lop co `will-change: transform`, nen Blink
+     tach chung thanh lop compositor rieng: khong repaint, khong cham vao
+     main-thread. Day la ly do chon cach nay thay vi canvas — nen dong la thu
+     dat nhat co the them vao mot trang, vi no phu kin viewport.
+
+     Hai chu ky 90s va 140s khong chia het cho nhau, nen hinh khong bao gio lap
+     lai y het — mat khong bat duoc nhip.
+
+     inset: -50% cho lop rong hon viewport, de luc troi khong lo mep. Moi
+     keyframe dich dung MOT o luoi nen vong lap lien mach. */
+  .pixel-field {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .pixel-field::before,
+  .pixel-field::after {
+    content: "";
+    position: absolute;
+    inset: -50%;
+    will-change: transform;
+  }
+
+  .pixel-field::before {
+    background-image: radial-gradient(
+      hsl(var(--foreground) / var(--field-dot)) 1px,
+      transparent 1px
+    );
+    background-size: 32px 32px;
+    animation: field-drift 90s linear infinite;
+  }
+
+  .pixel-field::after {
+    background-image: radial-gradient(
+      hsl(var(--brand) / var(--field-accent)) 1px,
+      transparent 1px
+    );
+    background-size: 96px 96px;
+    animation: field-drift-accent 140s linear infinite;
+  }
+
+  @keyframes field-drift {
+    to {
+      transform: translate3d(32px, 32px, 0);
+    }
+  }
+
+  @keyframes field-drift-accent {
+    to {
+      transform: translate3d(-96px, 96px, 0);
+    }
+  }
+
   /* --- Vach tien do cuon o day header ---
      Bien --progress do JS ghi vao (section-nav.tsx), CSS lo phan ve. Dung
      transform chu khong phai width nen browser khong phai reflow moi khung. */
@@ -394,6 +461,15 @@
       opacity: 1;
       transform: none;
       clip-path: none;
+    }
+
+    /* Luoi nen DUNG YEN chu khong bien mat: no la ket cau, khong phai chuyen
+       dong mang nghia. Bo luon will-change de khong giu hai lop compositor
+       cho mot thu khong con doi. */
+    .pixel-field::before,
+    .pixel-field::after {
+      animation: none !important;
+      will-change: auto;
     }
 
     .dim-siblings:hover > *:not(:hover) {

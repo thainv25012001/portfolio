@@ -341,6 +341,38 @@ keyboard users only — a mouse click never triggers both `:active` and
     early. The same check without reduced motion, sampled 2s after scroll,
     also reports 0 of 96 nodes hidden once the sequence completes.
 
+### The background grid
+
+`PixelField` (`src/components/ui/pixel-field.tsx`) renders one fixed, aria-hidden
+`<div class="pixel-field">` beneath every screen. It is a server component with
+no `"use client"`: both drifting layers are `::before` and `::after` pseudo-
+elements animated entirely in CSS, so the feature adds **zero JavaScript** — the
+route's First Load JS stayed at 104 kB across the change.
+
+Two layers drift in opposite directions: a 32px dot grid over 90s, and a
+96px accent-coloured grid over 140s. The periods do not divide into each other,
+so the composite pattern never visibly repeats. Each keyframe translates by
+exactly one tile, which is what makes the loop seamless. `inset: -50%` oversizes
+each layer so no edge enters the viewport as it moves.
+
+Only `transform` animates, and each layer carries `will-change: transform`, so
+Blink promotes them to their own compositor layers. That was measured rather than
+assumed — a 3-second trace of the idle page with the grid animating recorded
+**0 `Paint` events**, and 98% of the ~155k trace events landed on
+`VizCompositorThread`, `Compositor` and `CrGpuMain`. The renderer main thread saw
+3,371 events, against 3,959 for the same page with the grid removed from the DOM
+entirely. The GPU still redraws quads each frame — this is cheap, not free — but
+nothing re-rasterises and the main thread is untouched.
+
+Dot opacity lives in `--field-dot` and `--field-accent`, set per theme because a
+dark dot on a light ground reads heavier than the reverse. Worst-case contrast —
+body copy sitting directly on top of both dots at once — was computed by blending
+the dot colours onto the background: **5.74:1**, against the 4.5:1 floor.
+
+Under `prefers-reduced-motion` the grid **stays visible and stops moving**; it is
+texture, not meaningful motion. `will-change` is released at the same time so two
+full-viewport compositor layers are not retained for something no longer moving.
+
 ## Accessibility
 
 - Accent contrast floor is 4.5:1 against its own background, per theme.

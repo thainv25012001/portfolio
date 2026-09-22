@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { ThemeProvider } from "@/components/layout/theme-provider";
+import { PixelField } from "@/components/ui/pixel-field";
 import { content, PROFILE } from "@/data/content";
 import { isLocale, locales, localeHtmlLang, type Locale } from "@/lib/i18n";
 
@@ -150,6 +151,10 @@ export default function LocaleLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
+          {/* Nền lưới pixel. Đặt trước mọi thứ vì nó là position: fixed ở z-0,
+              còn khối nội dung bên dưới đã có z-10 nên luôn nằm trên. */}
+          <PixelField />
+
           {/* Link bỏ qua nav — chỉ hiện khi tab tới, phục vụ điều hướng bàn phím.
               Bọc trong .shell để nó canh theo đúng cột nội dung: đặt left theo
               --content-inset tính từ viewport sẽ lệch khi màn rộng hơn 1100px,
