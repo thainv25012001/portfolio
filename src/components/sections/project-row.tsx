@@ -22,7 +22,9 @@ export function ProjectRow({
   const { ui } = content;
 
   return (
-    <PixelPanel as="article" className="group p-6 md:p-8">
+    // flex h-full flex-col: lấp đầy chiều cao Reveal đã được grid kéo giãn, và
+    // cho phép nút ở dưới dùng mt-auto để ghim xuống đáy.
+    <PixelPanel as="article" className="group flex h-full flex-col p-6 md:p-8">
       <div className="flex flex-wrap items-baseline justify-between gap-4">
         <span className="font-pixel text-label text-brand">{index}</span>
         <span className="font-pixel text-label text-muted-foreground">
@@ -44,7 +46,9 @@ export function ProjectRow({
         ))}
       </ul>
 
-      <div className="mt-6">
+      {/* mt-auto: dồn khoảng trống thừa lên trên nút, nên 4 nút VIEW DETAIL
+          thẳng hàng ngang qua cả lưới thay vì so le theo độ dài tagline. */}
+      <div className="mt-auto pt-6">
         <PixelButton href={`/${locale}/work/${project.id}`} navigate="link" size="sm">
           {ui.viewDetail[locale]}
         </PixelButton>
