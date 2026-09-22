@@ -5,7 +5,6 @@ import { notFound } from "next/navigation";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { ThemeProvider } from "@/components/layout/theme-provider";
-import { GridLines } from "@/components/ui/grid-lines";
 import { content, PROFILE } from "@/data/content";
 import { isLocale, locales, localeHtmlLang, type Locale } from "@/lib/i18n";
 
@@ -151,8 +150,6 @@ export default function LocaleLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
-          <GridLines />
-
           {/* Link bỏ qua nav — chỉ hiện khi tab tới, phục vụ điều hướng bàn phím.
               Bọc trong .shell để nó canh theo đúng cột nội dung: đặt left theo
               --content-inset tính từ viewport sẽ lệch khi màn rộng hơn 1100px,

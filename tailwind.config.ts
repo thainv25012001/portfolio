@@ -16,7 +16,7 @@ const config: Config = {
     // ton tai, chu khong chi bi ghi de bang 0.
     borderRadius: { none: "0", DEFAULT: "0", sm: "0", md: "0", lg: "0", full: "0" },
     extend: {
-      maxWidth: { shell: "1100px" },
+      maxWidth: { shell: "1280px" },
       // Hai bien le dinh nghia trong globals.css. Dang ky vao spacing scale de
       // dung duoc nhu utility binh thuong (px-content, mx-frame, left-content)
       // thay vi phai viet style={{}} inline.

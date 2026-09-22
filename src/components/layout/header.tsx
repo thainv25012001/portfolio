@@ -12,12 +12,12 @@ export function Header({ locale }: HeaderProps) {
   const { nav, ui } = content;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-line bg-background/80 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b-[length:var(--pixel-border)] border-foreground bg-background/90 backdrop-blur-md">
       <div className="shell flex h-16 items-center justify-between">
         {/* Tên rút gọn, bấm vào quay lại đầu trang của đúng ngôn ngữ hiện tại */}
         <Link
           href={`/${locale}`}
-          className="font-display text-lg tracking-tightest transition-colors duration-200 ease-editorial hover:text-brand"
+          className="font-pixel text-[1.25rem] uppercase tracking-[0.12em]"
         >
           {PROFILE.name}
         </Link>
