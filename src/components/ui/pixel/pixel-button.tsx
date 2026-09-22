@@ -1,4 +1,5 @@
 import * as React from "react";
+import Link from "next/link";
 
 import { cn } from "@/lib/utils";
 
@@ -16,8 +17,8 @@ const VARIANT: Record<Variant, string> = {
 };
 
 const SIZE: Record<Size, string> = {
-  default: "h-14 px-8 text-[1.375rem]",
-  sm: "h-10 px-4 text-[1rem]",
+  default: "h-14 px-8 text-ui",
+  sm: "h-10 px-4 text-label",
 };
 
 type CommonProps = {
@@ -27,10 +28,16 @@ type CommonProps = {
   className?: string;
 };
 
-type AnchorProps = CommonProps & { href: string; external?: boolean } & Omit<
-    React.AnchorHTMLAttributes<HTMLAnchorElement>,
-    "href" | "className" | "children"
-  >;
+type AnchorProps = CommonProps & {
+  href: string;
+  external?: boolean;
+  /**
+   * Ép chọn phần tử render. Bỏ trống thì tự suy ra (xem `resolveAsLink`):
+   * - "link" → next/link, điều hướng client-side, không tải lại cả trang
+   * - "anchor" → <a> thuần
+   */
+  navigate?: "link" | "anchor";
+} & Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "href" | "className" | "children">;
 
 type ButtonProps = CommonProps & { href?: undefined } & Omit<
     React.ButtonHTMLAttributes<HTMLButtonElement>,
@@ -40,10 +47,30 @@ type ButtonProps = CommonProps & { href?: undefined } & Omit<
 type Props = AnchorProps | ButtonProps;
 
 /**
+ * Chọn next/link hay <a> thuần khi không có `navigate` truyền vào.
+ *
+ * Chỉ đường dẫn NỘI BỘ trong app router mới đi qua next/link. Cụ thể là href
+ * bắt đầu bằng "/" mà không phải "//" (đó là protocol-relative, tức link ra
+ * ngoài) và không được đánh dấu `external`. Mọi thứ còn lại — http(s):,
+ * mailto:, tel:, "#contact", và cả /resume.pdf mở tab mới bằng `external` —
+ * giữ <a> thuần: chúng không phải route của Next, cho next/link prefetch một
+ * file tĩnh hay một mailto: chỉ tổ sinh request thừa và 404 trong dev.
+ */
+function resolveAsLink(href: string, external?: boolean): boolean {
+  if (external) return false;
+  return href.startsWith("/") && !href.startsWith("//");
+}
+
+/**
  * Nút kiểu game: viền dày, bóng cứng, bấm là lún xuống đúng bằng độ lệch bóng.
  *
- * Có `href` thì render <a>, không thì <button>. Không bao giờ dùng <div> gắn
- * onClick — bàn phím và screen reader sẽ không thấy nó là điều khiển.
+ * Có `href` thì render <a> hoặc <Link>, không thì <button>. Không bao giờ
+ * dùng <div> gắn onClick — bàn phím và screen reader sẽ không thấy nó là
+ * điều khiển.
+ *
+ * Href nội bộ mặc định render next/link: brief của site là "game feel", mà
+ * mỗi lần bấm "Xem chi tiết" lại nháy trắng tải lại cả document thì hỏng hẳn
+ * cảm giác đó. `navigate` cho phép ép tay khi cần thoát khỏi suy luận này.
  *
  * Lưu ý triển khai: TypeScript không narrow union này qua rest-spread một
  * cách gọn gàng (rest sau khi tách children/variant/size/className vẫn là
@@ -57,7 +84,29 @@ export function PixelButton(props: Props) {
   const classes = cn(BASE, VARIANT[variant], SIZE[size], className);
 
   if ("href" in props && props.href !== undefined) {
-    const { href, external, children: _children, variant: _v, size: _s, className: _c, ...anchorProps } = props;
+    const {
+      href,
+      external,
+      navigate,
+      children: _children,
+      variant: _v,
+      size: _s,
+      className: _c,
+      ...anchorProps
+    } = props;
+
+    const asLink =
+      navigate === "link" ||
+      (navigate === undefined && resolveAsLink(href, external));
+
+    if (asLink) {
+      return (
+        <Link href={href} className={classes} {...anchorProps}>
+          {children}
+        </Link>
+      );
+    }
+
     return (
       <a
         href={href}

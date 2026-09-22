@@ -27,7 +27,7 @@ export function ProjectDetail({
 
       <h1 className="mt-4 font-pixel text-display uppercase">{project.title}</h1>
 
-      <p className="mt-6 max-w-3xl text-body text-muted-foreground">
+      <p className="mt-6 max-w-4xl text-body text-muted-foreground">
         {project.tagline[locale]}
       </p>
 
@@ -54,7 +54,7 @@ export function ProjectDetail({
             <dt className="font-pixel text-label uppercase text-muted-foreground md:pt-2">
               {row.label}
             </dt>
-            <dd className="max-w-3xl text-body">{row.value}</dd>
+            <dd className="max-w-4xl text-body">{row.value}</dd>
           </div>
         ))}
       </dl>
@@ -70,7 +70,7 @@ export function ProjectDetail({
       </ul>
 
       <div className="mt-16">
-        <PixelButton href={`/${locale}#work`} variant="secondary">
+        <PixelButton href={`/${locale}#work`} navigate="link" variant="secondary">
           {ui.backToWork[locale]}
         </PixelButton>
       </div>

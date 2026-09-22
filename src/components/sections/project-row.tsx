@@ -32,7 +32,7 @@ export function ProjectRow({
 
       <h3 className="mt-4 font-pixel text-h3 uppercase">{project.title}</h3>
 
-      <p className="mt-3 max-w-2xl text-body text-muted-foreground">
+      <p className="mt-3 max-w-3xl text-body text-muted-foreground">
         {project.tagline[locale]}
       </p>
 
@@ -45,7 +45,7 @@ export function ProjectRow({
       </ul>
 
       <div className="mt-6">
-        <PixelButton href={`/${locale}/work/${project.id}`} size="sm">
+        <PixelButton href={`/${locale}/work/${project.id}`} navigate="link" size="sm">
           {ui.viewDetail[locale]}
         </PixelButton>
       </div>
