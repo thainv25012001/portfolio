@@ -17,11 +17,10 @@ const config: Config = {
     borderRadius: { none: "0", DEFAULT: "0", sm: "0", md: "0", lg: "0", full: "0" },
     extend: {
       maxWidth: { shell: "1280px" },
-      // Hai bien le dinh nghia trong globals.css. Dang ky vao spacing scale de
-      // dung duoc nhu utility binh thuong (px-content, mx-frame, left-content)
-      // thay vi phai viet style={{}} inline.
+      // Bien le dinh nghia trong globals.css. Dang ky vao spacing scale de
+      // dung duoc nhu utility binh thuong (px-content, left-content) thay vi
+      // phai viet style={{}} inline.
       spacing: {
-        frame: "var(--frame-inset)",
         content: "var(--content-inset)",
         "section-gap": "var(--section-gap)",
         // Be rong cot nhan + khoang cach: hinh ve rong lui trai dung bang
@@ -62,9 +61,7 @@ const config: Config = {
         line: "hsl(var(--line))",
       },
       fontFamily: {
-        // Heading (con lai tu ban thiet ke cu, cho toi khi component doi sang
-        // pixel/sans o task sau) va mono cho .meta-label.
-        display: ["var(--font-display)", "Georgia", "serif"],
+        // Mono cho .meta-label.
         mono: ["ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
         // Display pixel: Handjet. Body/UI: Inter.
         pixel: ["var(--font-pixel)", "ui-monospace", "monospace"],

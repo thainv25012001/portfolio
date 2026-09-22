@@ -79,19 +79,15 @@
 
   /* ---------------------------------------------------------------
      LE NGANG
-     Hai gia tri nay dinh nghia toan bo can le cua site:
-       --frame-inset    vi tri hai duong ke doc, tinh tu mep container
-       --content-inset  le cua chu, luon lon hon de khong dinh duong ke
+     --content-inset dinh nghia le cua chu, dung boi .shell (xem duoi day).
      Sua o day la doi ca header, main lan footer cung luc.
   --------------------------------------------------------------- */
   :root {
-    --frame-inset: 1rem;
     --content-inset: 2rem;
   }
 
   @media (min-width: 768px) {
     :root {
-      --frame-inset: 2rem;
       --content-inset: 4rem;
     }
   }
@@ -125,11 +121,11 @@
     text-rendering: optimizeLegibility;
   }
 
-  /* Heading dung serif, tracking chat, khong bao gio in dam gia. */
+  /* Heading dung font pixel, tracking chat, khong bao gio in dam gia. */
   h1,
   h2,
   h3 {
-    @apply font-display font-normal tracking-tightest;
+    @apply font-pixel font-normal tracking-tightest;
   }
 
   /* Vong focus dung mau accent, khong dung outline mac dinh cua browser. */
@@ -162,8 +158,6 @@
   /* ------------------------------------------------------------------
      Can le ngang. Chi mot lop duy nhat: header, main va footer deu dung
      .shell nen ten o header luon thang cot voi ten o hero.
-     Vi tri hai duong ke doc dung --frame-inset (xem grid-lines.tsx), luon
-     nho hon --content-inset de chu khong bao gio dinh vao duong ke.
   ------------------------------------------------------------------ */
   .shell {
     @apply mx-auto w-full max-w-shell px-content;

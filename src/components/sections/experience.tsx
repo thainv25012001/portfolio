@@ -1,5 +1,6 @@
-import { Section } from "@/components/ui/section";
+import { Screen } from "@/components/ui/screen";
 import { Reveal, STAGGER } from "@/components/ui/reveal";
+import { PixelPanel } from "@/components/ui/pixel/pixel-panel";
 import { Separated } from "@/components/ui/separated";
 import { content } from "@/data/content";
 import type { Locale } from "@/lib/i18n";
@@ -7,60 +8,57 @@ import type { Locale } from "@/lib/i18n";
 type ExperienceProps = { locale: Locale };
 
 /**
- * Timeline dọc. Đường kẻ là border-l của <ol>, mỗi mốc có một ô vuông nhỏ
- * màu accent đè lên đường kẻ (vuông chứ không tròn, cho khớp ngôn ngữ thiết kế).
+ * Danh sách mốc kinh nghiệm, mỗi mốc là một PixelPanel riêng — khung viền
+ * dày, bóng cứng, đúng ngôn ngữ thiết kế pixel thay cho đường timeline mảnh
+ * trước đây.
  */
 export function Experience({ locale }: ExperienceProps) {
   const { experience } = content;
 
   return (
-    <Section id="experience" index="04" heading={experience.heading[locale]}>
-      <ol className="relative border-l border-line">
+    <Screen id="experience" index="04" heading={experience.heading[locale]}>
+      <ol className="space-y-6">
         {experience.items.map((item, index) => (
-          <li key={item.id} className="relative pb-12 pl-8 last:pb-0 md:pl-10">
-            {/* Điểm mốc: đặt ngoài <Reveal> để đường timeline luôn liền mạch */}
-            <span
-              aria-hidden="true"
-              className="absolute -left-[3.5px] top-[7px] h-[7px] w-[7px] bg-brand"
-            />
-
+          <li key={item.id}>
             <Reveal delay={index * STAGGER}>
-              <p className="meta-label">
-                {/* location là tuỳ chọn — Separated tự bỏ phần trống và dấu
-                    phân cách thừa, khỏi cần lồng thêm điều kiện */}
-                <Separated
-                  items={[item.period[locale], item.location?.[locale]]}
-                  separator="/"
-                />
-              </p>
-
-              <h3 className="mt-3 text-h3">{item.company}</h3>
-
-              <p className="mt-1.5 text-body text-brand">
-                {item.role[locale]}
-              </p>
-
-              {/* Câu mô tả vai trò — chỉ vài vị trí cần, nên là tuỳ chọn */}
-              {item.summary && (
-                <p className="mt-4 max-w-2xl text-body">
-                  {item.summary[locale]}
+              <PixelPanel as="article" className="p-6 md:p-8">
+                <p className="meta-label">
+                  {/* location là tuỳ chọn — Separated tự bỏ phần trống và dấu
+                      phân cách thừa, khỏi cần lồng thêm điều kiện */}
+                  <Separated
+                    items={[item.period[locale], item.location?.[locale]]}
+                    separator="/"
+                  />
                 </p>
-              )}
 
-              <ul className="mt-5 max-w-2xl space-y-2.5">
-                {item.points[locale].map((point, pointIndex) => (
-                  <li
-                    key={pointIndex}
-                    className="relative pl-5 text-body text-muted-foreground before:absolute before:left-0 before:top-[0.7em] before:h-px before:w-2.5 before:bg-line"
-                  >
-                    {point}
-                  </li>
-                ))}
-              </ul>
+                <h3 className="mt-3 text-h3">{item.company}</h3>
+
+                <p className="mt-1.5 text-body text-brand">
+                  {item.role[locale]}
+                </p>
+
+                {/* Câu mô tả vai trò — chỉ vài vị trí cần, nên là tuỳ chọn */}
+                {item.summary && (
+                  <p className="mt-4 max-w-2xl text-body">
+                    {item.summary[locale]}
+                  </p>
+                )}
+
+                <ul className="mt-5 max-w-2xl space-y-2.5">
+                  {item.points[locale].map((point, pointIndex) => (
+                    <li
+                      key={pointIndex}
+                      className="relative pl-5 text-body text-muted-foreground before:absolute before:left-0 before:top-[0.7em] before:h-px before:w-2.5 before:bg-line"
+                    >
+                      {point}
+                    </li>
+                  ))}
+                </ul>
+              </PixelPanel>
             </Reveal>
           </li>
         ))}
       </ol>
-    </Section>
+    </Screen>
   );
 }
