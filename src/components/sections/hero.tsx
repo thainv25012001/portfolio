@@ -33,11 +33,9 @@ export function Hero({ locale }: HeroProps) {
       </Reveal>
 
       <Reveal delay={STAGGER * 3}>
-        {/* PROFILE.resumeUrl / ui.resume chưa tồn tại — dùng cvUrl và nhãn CV
-            hiện có, đổi cả hai ở Task 8. */}
         <div className="mt-12 flex flex-wrap gap-4">
-          <PixelButton href={PROFILE.cvUrl} external>
-            {hero.secondaryCta[locale]}
+          <PixelButton href={PROFILE.resumeUrl} external>
+            {ui.resume[locale]}
           </PixelButton>
           <PixelButton href="#contact" variant="secondary">
             {ui.contact[locale]}

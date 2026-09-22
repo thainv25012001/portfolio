@@ -80,6 +80,7 @@ export type Ui = {
   viewDetail: L;
   backToWork: L;
   projectLinks: L;
+  resume: L;
 };
 
 export const ui: Ui = {
@@ -96,4 +97,5 @@ export const ui: Ui = {
   viewDetail: { en: "View detail", vi: "Xem chi tiết" },
   backToWork: { en: "Back to work", vi: "Quay lại dự án" },
   projectLinks: { en: "Links", vi: "Liên kết" },
+  resume: { en: "Resume", vi: "Resume" },
 };

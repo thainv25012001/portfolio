@@ -8,8 +8,8 @@ export const PROFILE = {
   email: "thainv2501@gmail.com",
   /** Username LinkedIn (chỉ username, không kèm https://). */
   linkedin: "thainv2501",
-  /** File CV trong /public — sinh từ Thai-Nguyen-Resume.docx. */
-  cvUrl: "/cv.pdf",
+  /** File resume trong /public — sinh từ Thai-Nguyen-Resume.docx. */
+  resumeUrl: "/resume.pdf",
   /** TODO: domain thật sau khi deploy — dùng cho SEO và Open Graph. */
   siteUrl: "https://your-domain.vercel.app",
 } as const;

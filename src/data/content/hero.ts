@@ -7,7 +7,6 @@ export type Hero = {
   currentRole: L;
   positioning: L;
   primaryCta: L;
-  secondaryCta: L;
 };
 
 export const hero: Hero = {
@@ -21,5 +20,4 @@ export const hero: Hero = {
     vi: "Full Stack JavaScript Developer specializing in MERN Stack, PERN Stack, and Next.js, building fast, scalable, and modern web applications with clean UI and high-performance backend systems.",
   },
   primaryCta: { en: "View projects", vi: "Xem dự án" },
-  secondaryCta: { en: "Download CV", vi: "Tải CV" },
 };
