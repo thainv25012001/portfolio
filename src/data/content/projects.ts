@@ -59,6 +59,12 @@ export type Project = {
    * án chỉ có chữ, layout vẫn đúng.
    */
   visuals?: ProjectVisual[];
+  /**
+   * Link ra sản phẩm thật hoặc mã nguồn. Tuỳ chọn — dự án của khách hàng
+   * thường không public. Rỗng thì trang detail KHÔNG vẽ khối links, nên
+   * không bao giờ lòi ra một mảng trống.
+   */
+  links?: { label: L; href: string; kind: "live" | "repo" | "doc" }[];
 };
 
 export type Projects = {
@@ -177,20 +183,30 @@ export const projects: Projects = {
       ],
     },
 
-    /* Muốn thêm dự án hackathon Hedera Guardian (Top 5, 2023) thì bỏ comment
-       khối dưới và điền nội dung thật. Chưa có `visuals` thì khối vẫn hiển thị
-       bình thường, chỉ là không có hình.
-
+    /* Nội dung dưới đây suy ra từ tên chính thức của hackathon ("Crafting ESG
+       Solutions on Hedera Guardian") — bạn đọc lại và sửa cho khớp thực tế,
+       nhất là phần problem/solution vì tôi không có thêm chi tiết nào khác. */
     {
       id: "hedera-esg",
       title: "ESG on Hedera Guardian",
       period: { en: "2023", vi: "2023" },
-      tagline: { en: "", vi: "" },
-      problem: { en: "", vi: "" },
-      solution: { en: "", vi: "" },
-      result: { en: "Top 5 — Crafting ESG Solutions on Hedera Guardian hackathon.", vi: "Top 5 — hackathon Crafting ESG Solutions on Hedera Guardian." },
-      tags: [],
+      tagline: {
+        en: "Hackathon entry building an ESG data solution on Hedera Guardian — top 5 finish.",
+        vi: "Sản phẩm hackathon xây giải pháp dữ liệu ESG trên Hedera Guardian — lọt top 5.",
+      },
+      problem: {
+        en: "ESG reporting is easy to claim and hard to verify — data usually comes from a single party with no independently checkable trail.",
+        vi: "Báo cáo ESG dễ công bố nhưng khó kiểm chứng — dữ liệu thường chỉ đến từ một phía, không có dấu vết để bên khác kiểm tra độc lập.",
+      },
+      solution: {
+        en: "Prototyped an ESG data workflow on Hedera Guardian during the hackathon, using its policy engine to record and verify ESG claims on a distributed ledger.",
+        vi: "Dựng thử một luồng dữ liệu ESG trên Hedera Guardian trong khuôn khổ hackathon, dùng policy engine của nền tảng để ghi nhận và xác minh các báo cáo ESG trên sổ cái phân tán.",
+      },
+      result: {
+        en: "Top 5 — Crafting ESG Solutions on Hedera Guardian hackathon.",
+        vi: "Top 5 — hackathon Crafting ESG Solutions on Hedera Guardian.",
+      },
+      tags: ["Hedera Guardian", "Blockchain", "ESG"],
     },
-    */
   ],
 };

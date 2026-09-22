@@ -77,6 +77,9 @@ export type Ui = {
   nextSlide: L;
   contact: L;
   all: L;
+  viewDetail: L;
+  backToWork: L;
+  projectLinks: L;
 };
 
 export const ui: Ui = {
@@ -90,4 +93,7 @@ export const ui: Ui = {
   // chuỗi này phục vụ mục đích khác nhau và có thể lệch nhau khi sửa sau này.
   contact: { en: "Contact", vi: "Liên hệ" },
   all: { en: "All", vi: "Tất cả" },
+  viewDetail: { en: "View detail", vi: "Xem chi tiết" },
+  backToWork: { en: "Back to work", vi: "Quay lại dự án" },
+  projectLinks: { en: "Links", vi: "Liên kết" },
 };
