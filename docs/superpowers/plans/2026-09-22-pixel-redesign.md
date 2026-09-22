@@ -448,6 +448,7 @@ git commit -m "feat: pixel primitives — button with press affordance, panel, t
 - Modify: `src/app/[locale]/layout.tsx` (drop `GridLines`, widen shell)
 - Modify: `src/app/globals.css` (`.shell` max-width)
 - Modify: `src/components/layout/header.tsx`
+- Modify: `src/components/layout/section-nav.tsx` (nav link typography only)
 
 **Interfaces:**
 - Consumes: `Reveal`, `PixelButton`
