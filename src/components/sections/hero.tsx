@@ -6,7 +6,7 @@ import type { Locale } from "@/lib/i18n";
 type HeroProps = { locale: Locale };
 
 export function Hero({ locale }: HeroProps) {
-  const { hero, contact } = content;
+  const { hero, ui } = content;
 
   return (
     <section
@@ -40,7 +40,7 @@ export function Hero({ locale }: HeroProps) {
             {hero.secondaryCta[locale]}
           </PixelButton>
           <PixelButton href="#contact" variant="secondary">
-            {contact.heading[locale]}
+            {ui.contact[locale]}
           </PixelButton>
         </div>
       </Reveal>

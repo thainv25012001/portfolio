@@ -387,6 +387,16 @@
   .pixel-press:active {
     transform: translate(4px, 4px);
     box-shadow: none;
+    /* Khi nut vua :active vua :focus-visible (giu Space/Enter sau khi Tab
+       toi), rule ring cua Tailwind (.focus-visible\:ring-4:focus-visible)
+       hoa specificity voi rule nay va thang nho dung sau trong source. Box-
+       shadow cua no doc tu var(--tw-shadow, 0 0 #0000) — mot custom property
+       rieng, khong nam trong shorthand box-shadow nen khai "box-shadow: none"
+       o tren khong dong duoc no. .shadow-pixel van dang set --tw-shadow thanh
+       bong pixel cung, nen neu khong xoa o day no se ro ri nguoc lai vao box-
+       shadow cua rule ring. Phai reset ca hai thi bong moi that su bien mat
+       khi bam bang ban phim. */
+    --tw-shadow: 0 0 #0000;
   }
 
   /* --- Tat sach khi nguoi dung yeu cau it chuyen dong ---
