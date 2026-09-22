@@ -336,8 +336,13 @@
      Hai chu ky 90s va 140s khong chia het cho nhau, nen hinh khong bao gio lap
      lai y het — mat khong bat duoc nhip.
 
-     inset: -50% cho lop rong hon viewport, de luc troi khong lo mep. Moi
-     keyframe dich dung MOT o luoi nen vong lap lien mach. */
+     Moi keyframe dich dung MOT o luoi nen vong lap lien mach.
+
+     Lop phai rong hon viewport de luc troi khong lo mep, nhung chi can hon
+     dung bang quang duong dich xa nhat (96px cua lop accent). Truoc day day la
+     `inset: -50%`, tuc gap doi viewport moi chieu — gap 4 lan dien tich, khoang
+     39 MB texture cho hai lop o 1440x900, de thua cho mot chuyen dong 96px.
+     128px la du, va giam con khoang 15 MB. */
   .pixel-field {
     position: fixed;
     inset: 0;
@@ -350,7 +355,7 @@
   .pixel-field::after {
     content: "";
     position: absolute;
-    inset: -50%;
+    inset: -128px;
     will-change: transform;
   }
 

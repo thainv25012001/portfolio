@@ -19,10 +19,11 @@ export function Projects({ locale }: ProjectsProps) {
 
       <div className="mt-8 grid gap-6 md:grid-cols-2">
         {projects.items.map((project, index) => (
-          // h-full: Reveal MỚI là grid item, không phải card. Không có nó thì
-          // grid kéo giãn đúng cái div này còn PixelPanel bên trong vẫn chỉ cao
-          // bằng nội dung, nên hai card cùng hàng lệch nhau.
-          <Reveal key={project.id} className="h-full">
+          // Reveal là grid item; `align-items: stretch` mặc định đã cho nó
+          // chiều cao dùng xác định bằng cả hàng, nên `h-full` của PixelPanel
+          // bên trong tự giải được. Không cần class nào ở đây — đo rồi: gỡ ra
+          // thì card vẫn cao bằng nhau và nút vẫn thẳng hàng.
+          <Reveal key={project.id}>
             <ProjectRow
               project={project}
               index={String(index + 1).padStart(2, "0")}
