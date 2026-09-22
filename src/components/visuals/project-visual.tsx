@@ -5,7 +5,6 @@ import { DiagramMotion } from "@/components/visuals/diagram-motion";
 import { DIAGRAMS } from "@/components/visuals/diagrams";
 import { content, type ProjectVisual } from "@/data/content";
 import type { Locale } from "@/lib/i18n";
-import { cn } from "@/lib/utils";
 
 type ProjectVisualsProps = {
   visuals: ProjectVisual[] | undefined;
@@ -53,14 +52,12 @@ function DiagramFigure({
     <figure>
       {/* DiagramMotion lo phần "khi nào bắt đầu vẽ" — nó theo dõi chính khung
           hình này, không phải khối dự án bao ngoài. */}
-      <DiagramMotion
-        className={cn(
-          "overflow-x-auto border border-line px-5 py-6 md:px-7",
-          // Lùi trái đúng bằng cột nhãn + khoảng cách của Section, nên hình
-          // rộng chiếm hết chiều ngang thay vì bị bó trong cột nội dung.
-          diagram.bleed && "md:-ml-bleed",
-        )}
-      >
+      {/* Không còn lùi trái: `-ml-bleed` sinh ra cho layout Section hai cột, để
+          hình lấy lại bề rộng của cột nhãn. Screen không có cột nhãn, nên nó
+          chỉ còn là margin âm kéo hình ra ngoài mép trái viewport (đo được
+          −87px ở 1440, −160px ở 1280). Shell rộng 1280 đã đủ chỗ cho hình
+          1240 đơn vị; hẹp hơn thì cuộn ngang trong chính khung này. */}
+      <DiagramMotion className="overflow-x-auto border border-line px-5 py-6 md:px-7">
         {/* Thẻ <svg> nằm ở đây, không nằm trong từng diagram: chỉ một chỗ viết
             viewBox và quyết định bề rộng tối thiểu. Không cho hình co nhỏ quá
             MIN_DIAGRAM_SCALE — chữ trong SVG co theo hình, nhỏ quá là không

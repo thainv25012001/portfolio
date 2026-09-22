@@ -67,11 +67,6 @@ const T = {
 export type Diagram = {
   width: number;
   height: number;
-  /**
-   * Hình rộng thì tràn ngược qua cột nhãn để chiếm hết chiều ngang section.
-   * Không có cờ này, hình 1160 đơn vị luôn phải cuộn ngang trong cột 748px.
-   */
-  bleed?: boolean;
   render: (locale: Locale) => React.ReactNode;
 };
 
@@ -494,7 +489,6 @@ export const DIAGRAMS: Record<DiagramId, Diagram> = {
   "aivn-architecture": {
     width: AIVN_W,
     height: AIVN_H,
-    bleed: true,
     render: aivnArchitecture,
   },
   "kyc-flow": { width: KYC_W, height: KYC_H, render: kycFlow },

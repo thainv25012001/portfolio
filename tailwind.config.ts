@@ -16,10 +16,6 @@ const config: Config = {
       // phai viet style={{}} inline.
       spacing: {
         content: "var(--content-inset)",
-        "section-gap": "var(--section-gap)",
-        // Be rong cot nhan + khoang cach: hinh ve rong lui trai dung bang
-        // day la tran het chieu ngang cua section.
-        bleed: "calc(var(--section-label-w) + var(--section-gap))",
       },
       colors: {
         // --- Token chuan shadcn/ui (giu nguyen de `npx shadcn add` chay duoc) ---
