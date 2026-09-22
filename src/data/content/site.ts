@@ -76,6 +76,7 @@ export type Ui = {
   prevSlide: L;
   nextSlide: L;
   contact: L;
+  all: L;
 };
 
 export const ui: Ui = {
@@ -88,4 +89,5 @@ export const ui: Ui = {
   // Nhãn nút CTA — tách riêng khỏi contact.heading (tiêu đề section) vì hai
   // chuỗi này phục vụ mục đích khác nhau và có thể lệch nhau khi sửa sau này.
   contact: { en: "Contact", vi: "Liên hệ" },
+  all: { en: "All", vi: "Tất cả" },
 };
