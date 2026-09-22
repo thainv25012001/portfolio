@@ -9,3 +9,8 @@ npm-debug.log*
 .vercel
 *.tsbuildinfo
 next-env.d.ts
+
+# Isolated worktrees and subagent-driven-development scratch
+.claude/worktrees
+.worktrees
+.superpowers
