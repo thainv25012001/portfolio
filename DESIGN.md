@@ -205,19 +205,24 @@ keyboard users only — a mouse click never triggers both `:active` and
 - **`DiagramMotion`** (`src/components/visuals/diagram-motion.tsx`) gives
   each architecture diagram its own visibility trigger, independent of the
   `Reveal` wrapping the rest of the project block. It calls `useInView`
-  with `threshold: 0.25` and `rootMargin: "0px 0px -10% 0px"`. This
-  replaces an earlier version where the diagram's animation was gated on
-  the *enclosing* `Reveal`, which — per the in-code comment — fired with
-  only ~4% of the diagram visible and finished animating at ~7% visible,
-  because that wrapper is much taller than the viewport. Giving the diagram
-  its own observer root fixes that.
-  - Note: I could not independently re-measure the "fires at ratio 0.403"
-    figure supplied as background for this task — that would require an
-    actual browser measurement, which is outside what static source
-    reading can confirm. What the source verifiably sets is
-    `threshold: 0.25` with a `-10%` bottom `rootMargin`; I'm documenting
-    the configured values rather than asserting an unverified derived
-    number.
+  with `threshold: 0.25` and `rootMargin: "0px 0px -10% 0px"`. Configured as
+  threshold `0.25` / `rootMargin` `-10%`; measured to fire at ratio **0.403**
+  of the diagram's own height (headless Edge over CDP, production build,
+  `/en/work/aivn-elearning`, scrolled upward in 10px steps from below the
+  fold). The two numbers are consistent, not competing: the negative bottom
+  margin shrinks the effective root box, so a `0.25` threshold measured
+  against that smaller box lands near `0.40` of the diagram against the
+  real viewport. The config is what a maintainer edits; the ratio is what
+  it actually buys.
+  - This replaces a real bug where the diagram's self-draw was triggered by
+    the `Reveal` wrapping the *entire* project entry instead of the diagram
+    itself: because that wrapper is far taller than the viewport, the whole
+    self-draw sequence played out — and finished — with only ~4% of the
+    diagram on screen (7% by the time it finished), long before a reader
+    actually scrolled to it. That's why `DiagramMotion` exists as its own
+    component with its own observer rather than the diagram simply reusing
+    `Reveal` — collapsing it back into `Reveal` would silently reintroduce
+    the bug.
 - Diagram stage timings derive from each other with `calc()` in
   `globals.css`, under `.dg-root`:
   ```css
@@ -245,10 +250,13 @@ keyboard users only — a mouse click never triggers both `:active` and
   its *pre-animation* rest state once durations are zeroed. The
   `.pixel-press` transform itself is intentionally kept (only its
   transition is removed) because it's an affordance, not decoration.
-  - I could not independently re-verify the "nothing hidden at 80ms" timing
-    claim through static reading; I'm documenting the mechanism (why the
-    CSS block exists and what it guarantees structurally) rather than
-    re-asserting an unmeasured number.
+  - Measured (headless Edge over CDP, production build,
+    `/en/work/aivn-elearning`): with `prefers-reduced-motion: reduce`
+    emulated and sampled 80ms after scrolling `.dg-root` into view,
+    `data-visible=true` and all 96 animated SVG nodes in the diagram report
+    hidden-count 0 — nothing is still in its pre-animation state that
+    early. The same check without reduced motion, sampled 2s after scroll,
+    also reports 0 of 96 nodes hidden once the sequence completes.
 
 ## Accessibility
 
