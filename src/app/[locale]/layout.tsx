@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Handjet, Inter } from "next/font/google";
 import { notFound } from "next/navigation";
 
 import { Footer } from "@/components/layout/footer";
@@ -15,22 +15,22 @@ import "../globals.css";
    FONTS
    Cả hai font đều lấy subset "vietnamese" — bắt buộc, vì các ký tự ệ ự ớ ạ
    nằm ngoài subset latin-ext.
-   Lưu ý: Instrument Serif KHÔNG có subset tiếng Việt (thiếu hẳn dải
-   U+1EA0–U+1EF1), nên dùng Playfair Display thay thế. Nếu site chỉ chạy
-   tiếng Anh và tên không dấu, đổi lại thành:
-     import { Instrument_Serif } from "next/font/google";
-     const display = Instrument_Serif({ weight: "400", subsets: ["latin"], ... });
+
+   Handjet: variable 100..900, has the `vietnamese` subset. Chosen over
+   VT323 because the weight axis is what makes chunky display type possible;
+   VT323 is single-weight and terminal-thin. Press Start 2P and Pixelify Sans
+   were rejected outright — no Vietnamese glyphs.
    -------------------------------------------------------------------------- */
+const pixel = Handjet({
+  subsets: ["latin", "latin-ext", "vietnamese"],
+  display: "swap",
+  variable: "--font-pixel",
+});
+
 const sans = Inter({
   subsets: ["latin", "latin-ext", "vietnamese"],
   display: "swap",
   variable: "--font-sans",
-});
-
-const display = Playfair_Display({
-  subsets: ["latin", "latin-ext", "vietnamese"],
-  display: "swap",
-  variable: "--font-display",
 });
 
 /* --------------------------------------------------------------------------
@@ -133,7 +133,7 @@ export default function LocaleLayout({
     <html
       lang={localeHtmlLang[locale]}
       suppressHydrationWarning
-      className={`${sans.variable} ${display.variable}`}
+      className={`${sans.variable} ${pixel.variable}`}
     >
       <body className="min-h-dvh">
         {/* Không có JS thì animation không bao giờ chạy — ép nội dung hiện đầy đủ. */}
@@ -147,7 +147,7 @@ export default function LocaleLayout({
 
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
+          defaultTheme="dark"
           enableSystem={false}
           disableTransitionOnChange
         >

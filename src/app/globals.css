@@ -34,6 +34,11 @@
     /* Duong cong easing duy nhat cua site. tailwind.config.ts tro vao bien
        nay, nen utility `ease-editorial` va CSS thuan dung chung mot dinh nghia. */
     --ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
+
+    /* Do day vien va do lech bong — mot cho duy nhat, moi primitive doc tu day. */
+    --pixel-border: 3px;
+    --pixel-shadow: 4px 4px 0 0 hsl(var(--foreground));
+    --pixel-shadow-sm: 2px 2px 0 0 hsl(var(--foreground));
   }
 
   /* ---------------------------------------------------------------
