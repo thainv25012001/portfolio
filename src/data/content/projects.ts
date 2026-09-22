@@ -183,9 +183,12 @@ export const projects: Projects = {
       ],
     },
 
-    /* Nội dung dưới đây suy ra từ tên chính thức của hackathon ("Crafting ESG
-       Solutions on Hedera Guardian") — bạn đọc lại và sửa cho khớp thực tế,
-       nhất là phần problem/solution vì tôi không có thêm chi tiết nào khác. */
+    /* TODO(owner): tagline/problem/solution của mục hedera-esg dưới đây được
+       viết ra KHÔNG có nguồn thật — chỉ suy ra từ tên chính thức của hackathon
+       ("Crafting ESG Solutions on Hedera Guardian"), không có chi tiết kỹ
+       thuật nào khác để đối chiếu. Bạn PHẢI đọc lại và xác nhận (hoặc viết lại
+       cho đúng thực tế) trước khi deploy — đừng để nội dung chưa kiểm chứng
+       lên trang công khai. */
     {
       id: "hedera-esg",
       title: "ESG on Hedera Guardian",
@@ -199,8 +202,8 @@ export const projects: Projects = {
         vi: "Báo cáo ESG dễ công bố nhưng khó kiểm chứng — dữ liệu thường chỉ đến từ một phía, không có dấu vết để bên khác kiểm tra độc lập.",
       },
       solution: {
-        en: "Prototyped an ESG data workflow on Hedera Guardian during the hackathon, using its policy engine to record and verify ESG claims on a distributed ledger.",
-        vi: "Dựng thử một luồng dữ liệu ESG trên Hedera Guardian trong khuôn khổ hackathon, dùng policy engine của nền tảng để ghi nhận và xác minh các báo cáo ESG trên sổ cái phân tán.",
+        en: "Prototyped an ESG data solution on Hedera Guardian during the hackathon.",
+        vi: "Dựng thử một giải pháp dữ liệu ESG trên Hedera Guardian trong khuôn khổ hackathon.",
       },
       result: {
         en: "Top 5 — Crafting ESG Solutions on Hedera Guardian hackathon.",
