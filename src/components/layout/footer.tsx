@@ -8,7 +8,7 @@ export function Footer({ locale }: FooterProps) {
 
   return (
     <footer className="border-t border-line py-10">
-      <div className="flex flex-col gap-4 text-[13px] text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 text-small text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <p>{footer.rights[locale]}</p>
 
         <div className="flex items-center gap-6">

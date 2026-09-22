@@ -18,25 +18,34 @@ type ScreenProps = {
  * category, snap sẽ khoá người đọc ở giữa và phá cuộn bằng bàn phím.
  * min-h-dvh (không phải min-h-screen) để thanh địa chỉ trên mobile không làm
  * màn bị hụt.
+ *
+ * Căn giữa bằng `my-auto` trên khối con chứ KHÔNG dùng `justify-center`:
+ * vài màn (Stack sau khi mở category, Work, Experience) cao hơn viewport, và
+ * `justify-center` khi nội dung tràn sẽ đẩy phần đầu lên trên mép khung —
+ * vùng đó không cuộn tới được nên chữ bị cắt mất. Auto margin tự về 0 khi
+ * hết chỗ, nên còn chỗ thì căn giữa, hết chỗ thì bám mép trên và cuộn bình
+ * thường.
+ *
+ * Tiêu đề là <h2> thật: trang chủ có đúng một <h1> (tên ở Hero), rồi tới các
+ * <h2> này, rồi <h3> trong từng khối — cây heading liền mạch, không nhảy bậc.
  */
 export function Screen({ id, index, heading, children, className }: ScreenProps) {
   return (
     <section
       id={id}
       className={cn(
-        "flex min-h-dvh scroll-mt-20 flex-col justify-center py-24 md:py-32",
+        "flex min-h-dvh scroll-mt-20 flex-col py-20 md:py-24",
         className,
       )}
     >
-      <Reveal>
-        <p className="mb-8 font-pixel text-label uppercase text-muted-foreground md:mb-12">
-          <span className="text-brand">{index}</span>
-          <span className="px-3 text-line">/</span>
-          {heading}
-        </p>
-      </Reveal>
+      <div className="my-auto w-full min-w-0">
+        <Reveal className="mb-8 md:mb-12">
+          <p className="font-pixel text-label uppercase text-brand">{index}</p>
+          <h2 className="mt-2 font-pixel text-h2 uppercase">{heading}</h2>
+        </Reveal>
 
-      <div className="min-w-0">{children}</div>
+        <div className="min-w-0">{children}</div>
+      </div>
     </section>
   );
 }

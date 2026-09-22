@@ -10,7 +10,7 @@ export function About({ locale }: AboutProps) {
 
   return (
     <Screen id="about" index="01" heading={about.heading[locale]}>
-      <div className="max-w-2xl space-y-6">
+      <div className="max-w-4xl space-y-6">
         {about.paragraphs[locale].map((paragraph, index) => (
           <Reveal key={index} delay={index * STAGGER}>
             <p className="text-body text-muted-foreground">{paragraph}</p>

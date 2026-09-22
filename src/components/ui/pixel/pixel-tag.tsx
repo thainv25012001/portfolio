@@ -11,7 +11,7 @@ export function PixelTag({
   return (
     <span
       className={cn(
-        "inline-block border-2 border-line px-3 py-1 font-pixel text-[1rem] uppercase tracking-[0.1em] text-muted-foreground",
+        "inline-block border-2 border-line px-3 py-1 font-pixel text-label uppercase tracking-[0.1em] text-muted-foreground",
         className,
       )}
     >

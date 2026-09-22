@@ -11,7 +11,7 @@ export function Contact({ locale }: ContactProps) {
   return (
     <Screen id="contact" index="05" heading={contact.heading[locale]}>
       <Reveal>
-        <p className="max-w-xl text-body text-muted-foreground">
+        <p className="max-w-3xl text-body text-muted-foreground">
           {contact.blurb[locale]}
         </p>
       </Reveal>

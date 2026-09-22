@@ -166,7 +166,7 @@
   /* Thang chu nho, chu hoa, gian rong - dung cho moi nhan phu tren site.
      .section-label gian rong hon vi dung lam tieu de cot ben trai section. */
   .meta-label {
-    @apply font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground;
+    @apply font-mono text-meta uppercase text-muted-foreground;
   }
 
   .section-label {

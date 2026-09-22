@@ -12,7 +12,7 @@ export function Projects({ locale }: ProjectsProps) {
   return (
     <Screen id="work" index="03" heading={projects.heading[locale]}>
       <Reveal>
-        <p className="max-w-2xl text-body text-muted-foreground">
+        <p className="max-w-4xl text-body text-muted-foreground">
           {projects.intro[locale]}
         </p>
       </Reveal>

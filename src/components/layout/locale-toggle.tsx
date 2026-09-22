@@ -29,7 +29,7 @@ export function LocaleToggle({ current, label }: LocaleToggleProps) {
     <div role="group" aria-label={label} className="flex items-center">
       {locales.map((locale, index) => (
         <Fragment key={locale}>
-          {index > 0 && <Separator className="px-1.5">/</Separator>}
+          {index > 0 && <Separator className="px-2">/</Separator>}
           <Link
             href={`/${locale}${restOfPath}`}
             hrefLang={locale}

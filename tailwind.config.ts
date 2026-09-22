@@ -4,12 +4,6 @@ const config: Config = {
   darkMode: ["class"],
   content: ["./src/**/*.{ts,tsx}"],
   theme: {
-    // Container canh giua, max-width 1100px theo yeu cau thiet ke.
-    container: {
-      center: true,
-      padding: { DEFAULT: "1.5rem", md: "2rem" },
-      screens: { "2xl": "1100px" },
-    },
     // Dat o cap theme (khong phai extend) de thay the hoan toan thang mac
     // dinh cua Tailwind — "border-radius: 0 everywhere, no exceptions" nghia
     // la ca cac key khong liet ke o day (xl, 2xl, 3xl, ...) cung khong con
@@ -75,10 +69,21 @@ const config: Config = {
         ],
         h2: ["clamp(2.5rem, 6vw, 4.5rem)", { lineHeight: "1.0" }],
         h3: ["clamp(1.5rem, 3vw, 2.25rem)", { lineHeight: "1.1" }],
-        body: ["clamp(1.125rem, 1.4vw, 1.375rem)", { lineHeight: "1.6" }],
-        // Nhan UI nho — weight 500 theo phan xu type specimen (Handjet 700
-        // qua nang o co nho, 500 doc duoc va van chac khoe).
-        label: ["0.875rem", { lineHeight: "1.2", letterSpacing: "0.18em", fontWeight: "500" }],
+        // Van xuoi: 22px -> 28px. Thiet ke cu dung 20px co dinh; o co display
+        // 8.75rem thi 20px doc nhu chu thich, nen than chu phai len theo.
+        body: ["clamp(1.375rem, 1.8vw, 1.75rem)", { lineHeight: "1.55" }],
+        // Nhan UI — weight 500 (Handjet 700 qua nang o co nho, 500 doc duoc
+        // va van chac khoe). 18px de khong bi than chu 22px nuot mat.
+        label: ["1.125rem", { lineHeight: "1.2", letterSpacing: "0.18em", fontWeight: "500" }],
+        // Chu tren control pixel (nut, ten o header). CO DINH chu khong fluid
+        // nhu `body`: nut cao h-14 = 56px, chu 28px trong do la chat cung.
+        // Tracking do chinh call site dat (nut 0.12em) de con dieu chinh duoc.
+        ui: ["1.375rem", { lineHeight: "1.2" }],
+        // Van xuoi phu (footer). Khong tracking, khong uppercase — no la cau
+        // viet thuong, khong phai nhan.
+        small: ["1.125rem", { lineHeight: "1.5" }],
+        // .meta-label trong globals.css — nhan mono nho nhat con doc duoc.
+        meta: ["0.9375rem", { lineHeight: "1.3", letterSpacing: "0.14em" }],
       },
       boxShadow: {
         pixel: "var(--pixel-shadow)",

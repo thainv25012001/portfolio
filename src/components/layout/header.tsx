@@ -17,7 +17,7 @@ export function Header({ locale }: HeaderProps) {
         {/* Tên rút gọn, bấm vào quay lại đầu trang của đúng ngôn ngữ hiện tại */}
         <Link
           href={`/${locale}`}
-          className="font-pixel text-[1.25rem] uppercase tracking-[0.12em]"
+          className="font-pixel text-ui uppercase tracking-[0.12em]"
         >
           {PROFILE.name}
         </Link>
