@@ -39,11 +39,17 @@
     --pixel-border: 3px;
     --pixel-shadow: 4px 4px 0 0 hsl(var(--foreground));
     --pixel-shadow-sm: 2px 2px 0 0 hsl(var(--foreground));
+    /* Bong luc control duoc nhac len khi hover. Lech 7px = 4px cu + 3px nhac,
+       nen goc xa cua bong dung yen: vat the noi len chu bong khong "no ra". */
+    --pixel-shadow-lift: 7px 7px 0 0 hsl(var(--foreground));
 
     /* Do dam cua luoi nen. Tach thanh bien vi hai theme chiu duoc muc khac
        nhau: cham den tren nen sang lo hon cham sang tren nen toi. */
     --field-dot: 0.04;
     --field-accent: 0.03;
+    /* Scanline tinh (ket cau CRT) va dai quet chay doc man hinh. */
+    --field-scan: 0.022;
+    --field-sweep: 0.02;
   }
 
   /* ---------------------------------------------------------------
@@ -54,6 +60,8 @@
   .dark {
     --field-dot: 0.055;
     --field-accent: 0.04;
+    --field-scan: 0.035;
+    --field-sweep: 0.03;
 
     --background: 0 0% 4%; /* #0A0A0A */
     --foreground: 0 0% 93%; /* #EDEDED */
@@ -349,6 +357,22 @@
     z-index: 0;
     overflow: hidden;
     pointer-events: none;
+    /* Scanline CRT: 1px ke, 2px trong. KHONG animate — day la ket cau cua mat
+       kinh, khong phai chuyen dong. Ve thang tren chinh .pixel-field chu khong
+       them mot lop nua, vi ::before/::after da co chu va mot lop tinh thi
+       khong can compositor rieng.
+
+       Mot o 3px lap lai bang background-size, chu khong phai repeating-linear-
+       gradient: ket qua ve ra y het nhau, nhung cach nay browser chi raster
+       dung mot o 3px roi tile, con repeating- thi phai tinh gradient tren ca
+       khung viewport — ma .pixel-field la fixed inset-0 nen khung do la ca man
+       hinh, ve lai moi lan resize va moi lan doi theme. */
+    background-image: linear-gradient(
+      to bottom,
+      hsl(var(--foreground) / var(--field-scan)) 0 1px,
+      transparent 1px 3px
+    );
+    background-size: 100% 3px;
   }
 
   .pixel-field::before,
@@ -359,22 +383,49 @@
     will-change: transform;
   }
 
+  /* steps() chu khong phai linear: luoi nhay dung MOT pixel mot lan thay vi
+     truot muot. Cung 90s, cung quang duong, nhung mat doc ra la luoi pixel
+     dich tren luoi pixel — do la ca ly do cua man hinh nay. So buoc bang so
+     pixel dich duoc (32px -> 32 buoc), nen moi buoc dung 1px chan. */
   .pixel-field::before {
     background-image: radial-gradient(
       hsl(var(--foreground) / var(--field-dot)) 1px,
       transparent 1px
     );
     background-size: 32px 32px;
-    animation: field-drift 90s linear infinite;
+    animation: field-drift 90s steps(32) infinite;
   }
 
+  /* Lop accent vua troi vua tho: chu ky 9s cua nhip sang khong an khop voi
+     140s cua duong troi, nen hai chuyen dong khong bao gio trung pha. */
   .pixel-field::after {
     background-image: radial-gradient(
       hsl(var(--brand) / var(--field-accent)) 1px,
       transparent 1px
     );
     background-size: 96px 96px;
-    animation: field-drift-accent 140s linear infinite;
+    animation:
+      field-drift-accent 140s steps(96) infinite,
+      field-pulse 9s ease-in-out infinite;
+    will-change: transform, opacity;
+  }
+
+  /* Dai quet doc man hinh. Mot the rieng (xem ui/pixel-field.tsx) vi
+     ::before/::after da dung het, va no can transform truc Y rieng.
+     Chi transform — dai gradient ve mot lan roi compositor keo di. */
+  .pixel-scan {
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: 18vh;
+    background-image: linear-gradient(
+      to bottom,
+      transparent,
+      hsl(var(--foreground) / var(--field-sweep)),
+      transparent
+    );
+    will-change: transform;
+    animation: field-sweep 9s linear infinite;
   }
 
   @keyframes field-drift {
@@ -386,6 +437,23 @@
   @keyframes field-drift-accent {
     to {
       transform: translate3d(-96px, 96px, 0);
+    }
+  }
+
+  @keyframes field-pulse {
+    50% {
+      opacity: 0.45;
+    }
+  }
+
+  /* Bat dau va ket thuc deu ngoai khung nhin, nen dai quet khong "hien ra"
+     hay "tat di" giua man — no di qua. */
+  @keyframes field-sweep {
+    from {
+      transform: translate3d(0, -20vh, 0);
+    }
+    to {
+      transform: translate3d(0, 100vh, 0);
     }
   }
 
@@ -429,18 +497,159 @@
     transform: scaleX(1);
   }
 
-  /* --- Bam la lun xuong: dich dung bang do lech bong roi bo bong ---
+  /* --- Hover khoi du an: ca tam panel nhac len ---
+     Cu nhac giong het .pixel-press, chi cham hon (0.25s so voi 0.14s): nut la
+     thu bam duoc ngay, con tam panel chi dang tu gioi thieu minh bam duoc.
+     Vi giong het nen hai class dung CHUNG mot rule :hover — dat cung cho voi
+     .pixel-press o duoi, cho hinh hoc cu nhac chi ton tai o mot noi. Rieng
+     transition thi khai o day vi day la cho duy nhat chung khac nhau. */
+  .pixel-lift {
+    transition:
+      transform 0.25s var(--ease-editorial),
+      box-shadow 0.25s var(--ease-editorial);
+  }
+
+  /* --- Hover khoi du an: hang the cong nghe sang len tu trai sang phai ---
+     Do tre tang dan theo vi tri nen hang the doc ra nhu dang nap dien, chu
+     khong bat het mot luc. Dat tren rule NEN chu khong trong :hover, nen luc
+     roi chuot no cung tat theo dung thu tu do.
+
+     KHONG dich the: PixelTag co y khong co bong vi no khong bam duoc — cho no
+     nhuc nhich khi hover la hua mot thu khong ton tai. */
+  .tag-sweep > li > * {
+    transition:
+      border-color 0.2s var(--ease-editorial),
+      color 0.2s var(--ease-editorial);
+    /* Vi tri the do React ghi vao tung <li> qua --i (xem project-row.tsx).
+       Truoc day cho nay la mot thang nth-child(2..7) roi mot rule vet
+       nth-child(n + 8) — dung bang so the toi da ma card render, tuc CARD_TAG_
+       LIMIT o file TSX duoc chep lai vao CSS. Doi han muc do ben kia thi thang
+       nay am tham cut ngon. Tinh bang calc thi thang dai bao nhieu cung duoc
+       va chi con mot con so duy nhat: buoc tre 0.04s. */
+    transition-delay: calc(var(--i, 0) * 0.04s);
+  }
+
+  @media (hover: hover) {
+    .group:hover .tag-sweep > li > * {
+      border-color: hsl(var(--brand));
+      color: hsl(var(--foreground));
+    }
+  }
+
+  /* --- Hover chan dung: doi huong anh sang, khong truot ---
+     Bong nhay tu goc duoi-phai sang goc tren-trai bang steps(2) — hai nac,
+     khong noi suy. Anh dich +4px dung bang do lech bong nen khoi hinh tong
+     the dung yen: doc ra la den doi huong, khong phai anh xe dich. */
+  .portrait-flip {
+    transition:
+      transform 0.18s steps(2),
+      box-shadow 0.18s steps(2);
+  }
+
+  @media (hover: hover) {
+    .portrait-flip:hover {
+      transform: translate(4px, 4px);
+      box-shadow: -4px -4px 0 0 hsl(var(--foreground));
+      --tw-shadow: -4px -4px 0 0 hsl(var(--foreground));
+    }
+  }
+
+  /* --- Hover chu lon (email o CONTACT): doi mau muot, dich giat mot nac ---
+     Mau doi tu tu vi do la thong tin; cu dich thi steps(1) vi do la phan hoi
+     co hoc, ma co hoc trong he nay thi cung. */
+  .pixel-jog {
+    transition:
+      color 0.3s var(--ease-editorial),
+      transform 0.12s steps(1);
+  }
+
+  @media (hover: hover) {
+    .pixel-jog:hover {
+      transform: translate(-2px, -2px);
+    }
+  }
+
+  /* --- Nhap nhay kieu con tro dong lenh ---
+     Dung chung cho cham "dang ranh" o hero va o danh dau muc nav dang xem.
+     Nhip 1.06s va canh cung/tat hoan toan (khong mo dan) la dac trung cua con
+     tro terminal — mo dan se doc ra la hieu ung, khong phai tin hieu. */
+  .pixel-blink {
+    animation: pixel-blink 1.06s infinite;
+  }
+
+  @keyframes pixel-blink {
+    0%,
+    49% {
+      opacity: 1;
+    }
+    50%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  /* --- Muc nav: o vuong nhap nhay danh dau section dang xem ---
+     O danh dau nam TRONG khoang gap san co giua hai muc (gap-4 = 16px o md,
+     gap-6 = 24px o lg): rong 0.4em (7.2px) dat o -0.62em nen no chiem tu
+     -11.2px den -4px, con du 4px ho voi nhan va gan 5px voi muc dung truoc.
+
+     KHONG chua le trai bang padding. ::before tuyet doi thi khong bao gio
+     tham gia layout, nen o danh dau hien ra hay tat di deu khong lam hang nav
+     xe dich — padding chi de "chong nhay" cho mot thu von da khong nhay, doi
+     lai la 6 muc x 15.3px = 92px be ngang. Tu 768px den ~920px ngan ay du day
+     header tran ngang o ca hai ngon ngu (do duoc: en 768px tran 85px, vi 768px
+     tran 154px so voi 62px von co). */
+  .nav-item[aria-current="true"]::before {
+    content: "";
+    position: absolute;
+    left: -0.62em;
+    top: 50%;
+    width: 0.4em;
+    height: 0.4em;
+    margin-top: -0.2em;
+    background-color: hsl(var(--brand));
+    animation: pixel-blink 1.06s infinite;
+  }
+
+  /* --- Nhac len khi tro toi, lun xuong khi bam ---
      Day la thu lam nut "ra nut". Dung transform chu khong phai margin nen
-     khong lam nhay layout xung quanh. */
+     khong lam nhay layout xung quanh.
+
+     Truoc day chi co nua sau (bam -> lun). Nua truoc: hover nhac nut len 3px
+     va keo bong tu 4px len 7px — GOC XA cua bong dung yen, nen doc ra la nut
+     roi khoi mat trang chu khong phai bong to len.
+
+     Bo trong @media (hover: hover): tren man cam ung, :hover dinh lai sau khi
+     cham, nen nut se ket o trang thai nhac len sau moi lan bam.
+
+     --tw-shadow phai set kem box-shadow (xem chu thich o :active): khi nut vua
+     hover vua focus-visible, rule ring cua Tailwind thang va no dung lai
+     --tw-shadow trong shorthand cua no. Khong set thi bong 4px cu ro ri nguoc
+     vao trong khi nut da nhac len 3px. */
   .pixel-press {
     transition:
-      transform 0.06s linear,
-      box-shadow 0.06s linear;
+      transform 0.14s var(--ease-editorial),
+      box-shadow 0.14s var(--ease-editorial);
+  }
+
+  /* Dung chung voi .pixel-lift (xem chu thich o tren): cung mot cu nhac 3px,
+     chi khac toc do — nen chi co mot ban cua hinh hoc nay va cua meo
+     --tw-shadow, thay vi hai ban phai nho sua kem nhau. */
+  @media (hover: hover) {
+    .pixel-press:hover,
+    .pixel-lift:hover {
+      transform: translate(-3px, -3px);
+      box-shadow: var(--pixel-shadow-lift);
+      --tw-shadow: var(--pixel-shadow-lift);
+    }
   }
 
   .pixel-press:active {
     transform: translate(4px, 4px);
     box-shadow: none;
+    /* Cu bam phai dut khoat hon cu nhac: nhac la moi, bam la da xay ra. */
+    transition-duration: 0.06s;
+    transition-timing-function: linear;
     /* Khi nut vua :active vua :focus-visible (giu Space/Enter sau khi Tab
        toi), rule ring cua Tailwind (.focus-visible\:ring-4:focus-visible)
        hoa specificity voi rule nay va thang nho dung sau trong source. Box-
@@ -477,6 +686,21 @@
       will-change: auto;
     }
 
+    /* Scanline tinh o lai (ket cau), dai quet bien han: mot dai sang truot doc
+       man hinh la chuyen dong thuan tuy, khong mang thong tin nao. */
+    .pixel-scan {
+      display: none;
+    }
+
+    /* Nhap nhay dong o trang thai SANG. Tat han thi o danh dau nav bien mat va
+       nguoi doc mat luon thong tin "dang o section nao" — do la xoa noi dung,
+       khong phai giam chuyen dong. */
+    .pixel-blink,
+    .nav-item[aria-current="true"]::before {
+      animation: none !important;
+      opacity: 1;
+    }
+
     .dim-siblings:hover > *:not(:hover) {
       opacity: 1;
     }
@@ -486,9 +710,14 @@
       transform: scaleX(1);
     }
 
-    /* Transform giu nguyen vi no la affordance (nut lun xuong khi bam), chu
-       khong phai trang tri — chi tat transition mot minh. */
-    .pixel-press {
+    /* Transform giu nguyen vi no la affordance (nut lun xuong khi bam, panel
+       nhac len khi tro toi), chu khong phai trang tri — chi tat transition
+       mot minh, trang thai cuoi van toi duoc, chi la toi ngay lap tuc. */
+    .pixel-press,
+    .pixel-lift,
+    .portrait-flip,
+    .pixel-jog,
+    .tag-sweep > li > * {
       transition: none;
     }
 

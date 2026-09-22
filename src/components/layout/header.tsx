@@ -17,13 +17,14 @@ export function Header({ locale }: HeaderProps) {
         {/* Tên rút gọn, bấm vào quay lại đầu trang của đúng ngôn ngữ hiện tại */}
         <Link
           href={`/${locale}`}
-          className="font-pixel text-ui uppercase tracking-[0.12em]"
+          className="link-underline font-pixel text-ui uppercase tracking-[0.12em]"
         >
           {PROFILE.name}
         </Link>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4 lg:gap-6">
           <SectionNav
+            locale={locale}
             items={nav.items.map((item) => ({
               id: item.id,
               label: item.label[locale],

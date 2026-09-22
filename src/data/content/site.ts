@@ -43,6 +43,7 @@ export const nav: Nav = {
     { id: "stack", label: { en: "Stack", vi: "Công nghệ" } },
     { id: "work", label: { en: "Work", vi: "Dự án" } },
     { id: "experience", label: { en: "Experience", vi: "Kinh nghiệm" } },
+    { id: "education", label: { en: "Education", vi: "Học vấn" } },
     { id: "contact", label: { en: "Contact", vi: "Liên hệ" } },
   ],
   skipToContent: {
@@ -72,6 +73,7 @@ export type Ui = {
   toggleTheme: L;
   switchLanguage: L;
   backToTop: L;
+  portraitAlt: L;
   gallery: L;
   prevSlide: L;
   nextSlide: L;
@@ -80,13 +82,19 @@ export type Ui = {
   viewDetail: L;
   backToWork: L;
   projectLinks: L;
+  projectStack: L;
   resume: L;
+  socialLinks: L;
 };
 
 export const ui: Ui = {
   toggleTheme: { en: "Toggle theme", vi: "Đổi giao diện sáng tối" },
   switchLanguage: { en: "Switch language", vi: "Đổi ngôn ngữ" },
   backToTop: { en: "Back to top", vi: "Lên đầu trang" },
+  portraitAlt: {
+    en: `Portrait of ${PROFILE.name}`,
+    vi: `Ảnh chân dung ${PROFILE.name}`,
+  },
   gallery: { en: "Project screenshots", vi: "Ảnh màn hình dự án" },
   prevSlide: { en: "Previous image", vi: "Ảnh trước" },
   nextSlide: { en: "Next image", vi: "Ảnh sau" },
@@ -97,5 +105,8 @@ export const ui: Ui = {
   viewDetail: { en: "View detail", vi: "Xem chi tiết" },
   backToWork: { en: "Back to work", vi: "Quay lại dự án" },
   projectLinks: { en: "Links", vi: "Liên kết" },
+  projectStack: { en: "Tech stack", vi: "Công nghệ" },
   resume: { en: "Resume", vi: "Resume" },
+  // Nhãn cho cụm nút mạng xã hội dán ở góc màn hình.
+  socialLinks: { en: "Social links", vi: "Mạng xã hội" },
 };

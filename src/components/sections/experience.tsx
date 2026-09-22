@@ -16,7 +16,7 @@ export function Experience({ locale }: ExperienceProps) {
   const { experience } = content;
 
   return (
-    <Screen id="experience" index="04" heading={experience.heading[locale]}>
+    <Screen id="experience" heading={experience.heading[locale]}>
       <ol className="space-y-6">
         {experience.items.map((item, index) => (
           <li key={item.id}>

@@ -61,13 +61,20 @@ export function ProjectDetail({
 
       <ProjectVisuals visuals={project.visuals} locale={locale} />
 
-      <ul className="mt-10 flex flex-wrap gap-2">
-        {project.tags.map((tag) => (
-          <li key={tag}>
-            <PixelTag>{tag}</PixelTag>
-          </li>
-        ))}
-      </ul>
+      {/* Cong nghe cua rieng du an nay. Truoc day hang tag nay dung tran, khong
+          co nhan, nen doc nhu mot cum chu roi. */}
+      <div className="mt-14">
+        <h2 className="font-pixel text-label uppercase text-muted-foreground">
+          {ui.projectStack[locale]}
+        </h2>
+        <ul className="mt-4 flex flex-wrap gap-2">
+          {project.tags.map((tag) => (
+            <li key={tag}>
+              <PixelTag>{tag}</PixelTag>
+            </li>
+          ))}
+        </ul>
+      </div>
 
       <div className="mt-16">
         <PixelButton href={`/${locale}#work`} navigate="link" variant="secondary">

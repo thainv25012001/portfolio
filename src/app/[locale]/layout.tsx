@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
+import { SocialDock } from "@/components/layout/social-dock";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { PixelField } from "@/components/ui/pixel-field";
 import { content, PROFILE } from "@/data/content";
@@ -175,6 +176,10 @@ export default function LocaleLayout({
               <Footer locale={locale} />
             </div>
           </div>
+
+          {/* Dán cố định ở góc dưới bên phải, ngoài .shell nên không trôi
+              theo nội dung. */}
+          <SocialDock locale={locale} />
         </ThemeProvider>
 
         <script

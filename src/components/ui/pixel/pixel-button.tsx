@@ -4,7 +4,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 type Variant = "primary" | "secondary";
-type Size = "default" | "sm";
+type Size = "default" | "sm" | "icon";
 
 const BASE =
   "pixel-press inline-flex items-center justify-center gap-2 border-[length:var(--pixel-border)] font-pixel uppercase tracking-[0.12em] shadow-pixel " +
@@ -19,6 +19,9 @@ const VARIANT: Record<Variant, string> = {
 const SIZE: Record<Size, string> = {
   default: "h-14 px-8 text-ui",
   sm: "h-10 px-4 text-label",
+  // O vuong chi chua icon, khong co chu nen khong khai text-*. 44px la nguong
+  // vung cham toi thieu — nho hon nua thi tren dien thoai bam truot.
+  icon: "h-11 w-11 p-0",
 };
 
 type CommonProps = {

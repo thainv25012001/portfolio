@@ -1,8 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
+import type { Locale } from "@/lib/i18n";
 
 type Item = { id: string; label: string };
 
@@ -11,15 +14,25 @@ type Item = { id: string; label: string };
  *
  * Hai việc:
  * 1. Section nào đang chiếm dải trên của viewport thì mục nav tương ứng sáng
- *    lên màu accent — người đọc luôn biết mình đang ở phần nào.
+ *    lên màu accent và mọc một ô vuông nhấp nháy bên trái (CSS đọc thẳng
+ *    `aria-current`, không cần class riêng) — người đọc luôn biết mình đang ở
+ *    phần nào.
  * 2. Một vạch 1px màu accent ở đáy header chạy theo tiến độ cuộn trang.
  *
  * Nhãn được truyền vào dưới dạng chuỗi đã dịch sẵn, nên client bundle không
  * phải nuốt cả cây nội dung.
+ *
+ * Header nằm trong layout chung nên nav này còn hiện trên trang chi tiết dự
+ * án, nơi không có section nào cả. Ở đó "#about" trỏ vào hư không và bấm
+ * không ra gì — nên khi rời trang chủ, link phải mang theo đường dẫn trang
+ * chủ của đúng ngôn ngữ hiện tại.
  */
-export function SectionNav({ items }: { items: Item[] }) {
+export function SectionNav({ items, locale }: { items: Item[]; locale: Locale }) {
   const [active, setActive] = useState<string | null>(null);
   const barRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+  const home = `/${locale}`;
+  const isHome = pathname === home || pathname === `${home}/`;
 
   useEffect(() => {
     const sections = items
@@ -88,23 +101,35 @@ export function SectionNav({ items }: { items: Item[] }) {
   return (
     <>
       <nav aria-label="Section navigation" className="hidden md:block">
-        <ul className="flex items-center gap-6">
+        <ul className="flex items-center gap-4 lg:gap-6">
           {items.map((item) => {
             const isActive = active === item.id;
+            // nav-item: móc để CSS treo ô vuông nhấp nháy đánh dấu mục đang
+            // xem. Ô nằm trong khoảng gap sẵn có giữa hai mục, không chiếm
+            // thêm bề ngang nào của header — xem globals.css.
+            const className = cn(
+              "nav-item link-underline whitespace-nowrap font-pixel text-label uppercase transition-colors duration-300 ease-editorial",
+              isActive
+                ? "text-brand"
+                : "text-muted-foreground hover:text-foreground",
+            );
             return (
               <li key={item.id}>
-                <a
-                  href={`#${item.id}`}
-                  aria-current={isActive ? "true" : undefined}
-                  className={cn(
-                    "link-underline font-pixel text-label uppercase transition-colors duration-300 ease-editorial",
-                    isActive
-                      ? "text-brand"
-                      : "text-muted-foreground hover:text-foreground",
-                  )}
-                >
-                  {item.label}
-                </a>
+                {isHome ? (
+                  <a
+                    href={`#${item.id}`}
+                    aria-current={isActive ? "true" : undefined}
+                    className={className}
+                  >
+                    {item.label}
+                  </a>
+                ) : (
+                  // Ngoài trang chủ thì đây là điều hướng thật sự: next/link
+                  // để khỏi tải lại cả document, Next tự cuộn tới hash.
+                  <Link href={`${home}#${item.id}`} className={className}>
+                    {item.label}
+                  </Link>
+                )}
               </li>
             );
           })}

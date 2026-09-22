@@ -14,7 +14,7 @@ export function TechStack({ locale }: TechStackProps) {
   const { techStack, ui } = content;
 
   return (
-    <Screen id="stack" index="02" heading={techStack.heading[locale]}>
+    <Screen id="stack" heading={techStack.heading[locale]}>
       <StackFilter
         allLabel={ui.all[locale]}
         groups={techStack.groups.map((g) => ({

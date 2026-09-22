@@ -9,7 +9,7 @@ export function Contact({ locale }: ContactProps) {
   const { contact } = content;
 
   return (
-    <Screen id="contact" index="05" heading={contact.heading[locale]}>
+    <Screen id="contact" heading={contact.heading[locale]}>
       <Reveal>
         <p className="max-w-3xl text-body text-muted-foreground">
           {contact.blurb[locale]}
@@ -20,7 +20,10 @@ export function Contact({ locale }: ContactProps) {
         {/* Email cỡ lớn — điểm kết của trang, cũng là CTA chính */}
         <a
           href={`mailto:${PROFILE.email}`}
-          className="mt-10 block break-words font-pixel text-[clamp(1.75rem,6vw,3.5rem)] leading-none tracking-tightest transition-colors duration-300 ease-editorial hover:text-brand"
+          // pixel-jog tự lo cả transition màu lẫn cú dịch một nấc khi hover,
+          // nên ở đây KHÔNG dùng transition-colors của Tailwind: utility nằm
+          // sau trong source order và sẽ ghi đè mất transform.
+          className="pixel-jog mt-10 block break-words font-pixel text-[clamp(1.75rem,6vw,3.5rem)] leading-none tracking-tightest hover:text-brand"
         >
           {PROFILE.email}
         </a>

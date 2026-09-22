@@ -11,7 +11,8 @@
      tech-stack.ts   3. Stack
      projects.ts     4. Selected Work   (file dài nhất)
      experience.ts   5. Experience
-     contact.ts      6. Contact
+     education.ts    6. Education
+     contact.ts      7. Contact
      site.ts         metadata, điều hướng, footer, nhãn screen reader
 
    File này chỉ gom lại. Mọi import cũ dạng `@/data/content` vẫn chạy nguyên.
@@ -23,6 +24,7 @@
 
 import { about, type About } from "./about.ts";
 import { contact, type Contact } from "./contact.ts";
+import { education, type Education } from "./education.ts";
 import { experience, type Experience } from "./experience.ts";
 import { hero, type Hero } from "./hero.ts";
 import { projects, type Projects } from "./projects.ts";
@@ -46,6 +48,7 @@ export type SiteContent = {
   techStack: TechStack;
   projects: Projects;
   experience: Experience;
+  education: Education;
   contact: Contact;
   footer: Footer;
   ui: Ui;
@@ -59,6 +62,7 @@ export const content: SiteContent = {
   techStack,
   projects,
   experience,
+  education,
   contact,
   footer,
   ui,
@@ -69,6 +73,7 @@ export { PROFILE } from "./profile.ts";
 /* Type công khai — component import từ "@/data/content" như trước. */
 export type { About } from "./about.ts";
 export type { Contact, SocialLink } from "./contact.ts";
+export type { Education, EducationItem } from "./education.ts";
 export type { Experience, ExperienceItem } from "./experience.ts";
 export type { Hero } from "./hero.ts";
 export type {

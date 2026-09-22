@@ -10,7 +10,7 @@ export function Projects({ locale }: ProjectsProps) {
   const { projects } = content;
 
   return (
-    <Screen id="work" index="03" heading={projects.heading[locale]}>
+    <Screen id="work" heading={projects.heading[locale]}>
       <Reveal>
         <p className="max-w-4xl text-body text-muted-foreground">
           {projects.intro[locale]}

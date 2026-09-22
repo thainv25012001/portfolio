@@ -71,6 +71,177 @@ export type Diagram = {
 };
 
 /* -------------------------------------------------------------------------
+   AI Sales Agent — hai băng: đánh chỉ mục ở nền (trên) và trả lời câu hỏi
+   (dưới). Hai chỉ mục cùng nằm trong một Postgres, cùng đổ xuống bước gộp
+   thứ hạng, nên hình nói đúng điều quan trọng nhất: câu trả lời đi ra từ
+   những đoạn thật sự lấy về được, không phải từ trí nhớ của mô hình.
+   ------------------------------------------------------------------------- */
+const RAG_W = 1000;
+const RAG_H = 340;
+
+/** Nhãn riêng của hình này — tên công nghệ vẫn viết thẳng vào hình. */
+const RAG_LABELS = {
+  documents: { en: "Documents", vi: "Tài liệu" },
+  worker: { en: "Worker", vi: "Tiến trình nền" },
+  extractChunkEmbed: {
+    en: "Extract · Chunk · Embed",
+    vi: "Bóc chữ · Chia đoạn · Nhúng",
+  },
+  vector: { en: "Vector", vi: "Vector" },
+  fullText: { en: "Full-text", vi: "Toàn văn" },
+  browser: { en: "Browser", vi: "Trình duyệt" },
+  agentLoop: { en: "Agent loop", vi: "Vòng lặp agent" },
+  toolCalling: { en: "Tool calling", vi: "Gọi công cụ" },
+  hybridRetrieval: { en: "Hybrid retrieval", vi: "Truy hồi kết hợp" },
+  streamedTokens: { en: "Streamed tokens", vi: "Token trả dần" },
+} satisfies Record<string, L>;
+
+function ragPipeline(locale: Locale): React.ReactNode {
+  const t = <K extends keyof typeof RAG_LABELS>(key: K) =>
+    RAG_LABELS[key][locale];
+
+  const boxH = 48;
+  const pad = 16;
+
+  // --- Băng trên: tài liệu → hàng đợi arq → worker → Postgres ---
+  const inY = 32;
+  const inMid = inY + boxH / 2;
+  const docX = 8;
+  const docW = 200;
+  const busX = 236;
+  const workX = 280;
+  const workW = 236;
+
+  // Khung Postgres chứa hai chỉ mục — cùng một cơ sở dữ liệu, hai cách tìm.
+  const pgX = 576;
+  const pgW = 416;
+  const pgY = inY - pad;
+  const pgH = boxH + pad * 2;
+  const idx = lane({ start: pgX + 14, size: 190, gap: 8, count: 2 });
+
+  // --- Băng dưới: trình duyệt → vòng lặp agent → gộp thứ hạng ---
+  const outY = 216;
+  const outMid = outY + boxH / 2;
+  const brX = 8;
+  const brW = 200;
+  const agentX = 268;
+  const agentW = 236;
+
+  // Nhà cung cấp mô hình nằm giữa hai băng, ngay trên vòng lặp agent.
+  const llmY = 120;
+  const agentMid = agentX + agentW / 2;
+
+  // Chỗ hai chỉ mục gộp lại trước khi đổ xuống bước fusion.
+  const joinY = 170;
+  const fuseMid = pgX + pgW / 2;
+
+  // Đường hồi tiếp SSE chạy dưới cùng, về lại trình duyệt.
+  const returnY = 304;
+
+  return (
+    <>
+      {/* Nạp tài liệu: việc nặng đẩy sang hàng đợi, không nằm trên luồng upload */}
+      <Box
+        x={docX}
+        y={inY}
+        w={docW}
+        h={boxH}
+        label={t("documents")}
+        sub="PDF · DOCX · HTML"
+      />
+      <ArrowRight x={docX + docW} y={inMid} length={busX - (docX + docW)} />
+      <Bus x={busX} y={inY - 12} length={boxH + 24} label="arq" vertical />
+      <ArrowRight x={busFar(busX)} y={inMid} length={workX - busFar(busX)} />
+      <Box
+        x={workX}
+        y={inY}
+        w={workW}
+        h={boxH}
+        label={t("worker")}
+        sub={t("extractChunkEmbed").toUpperCase()}
+      />
+      <ArrowRight x={workX + workW} y={inMid} length={pgX - (workX + workW)} />
+
+      {/* Một Postgres, hai chỉ mục — dữ liệu của mỗi tenant tách riêng trong đó */}
+      <Frame x={pgX} y={pgY} w={pgW} h={pgH} label="Postgres">
+        <Box
+          x={idx.at(0)}
+          y={inY}
+          w={idx.size}
+          h={boxH}
+          label="pgvector"
+          sub={t("vector").toUpperCase()}
+        />
+        <Box
+          x={idx.at(1)}
+          y={inY}
+          w={idx.size}
+          h={boxH}
+          label="tsvector"
+          sub={t("fullText").toUpperCase()}
+        />
+      </Frame>
+
+      {/* Hai chỉ mục cùng đổ vào một bước gộp thứ hạng */}
+      <Line x1={idx.mid(0)} y1={pgY + pgH} x2={idx.mid(0)} y2={joinY} />
+      <Line x1={idx.mid(1)} y1={pgY + pgH} x2={idx.mid(1)} y2={joinY} />
+      <Line x1={idx.mid(0)} y1={joinY} x2={idx.mid(1)} y2={joinY} />
+      <ArrowDown x={fuseMid} y={joinY} length={outY - joinY} />
+
+      {/* Nhà cung cấp mô hình: một giao diện, đổi nhà cung cấp không đổi lời gọi */}
+      <Box
+        x={agentX}
+        y={llmY}
+        w={agentW}
+        h={boxH}
+        label="LLM"
+        sub="OPENAI · ANTHROPIC · FAKE"
+      />
+      <ArrowUp x={agentMid - 30} y={outY} length={outY - (llmY + boxH)} />
+      <ArrowDown
+        x={agentMid + 30}
+        y={llmY + boxH}
+        length={outY - (llmY + boxH)}
+        accent
+      />
+
+      {/* Câu hỏi đi vào vòng lặp agent, vòng lặp tự quyết khi nào đi tìm */}
+      <Box x={brX} y={outY} w={brW} h={boxH} label={t("browser")} sub="SSE" />
+      <ArrowRight x={brX + brW} y={outMid} length={agentX - (brX + brW)} />
+      <Box
+        x={agentX}
+        y={outY}
+        w={agentW}
+        h={boxH}
+        label={t("agentLoop")}
+        sub={t("toolCalling").toUpperCase()}
+      />
+      <ArrowRight
+        x={agentX + agentW}
+        y={outMid}
+        length={pgX - (agentX + agentW)}
+      />
+      <Box
+        x={pgX}
+        y={outY}
+        w={pgW}
+        h={boxH}
+        label={t("hybridRetrieval")}
+        sub="RECIPROCAL RANK FUSION"
+      />
+
+      {/* Trả lời đẩy dần về trình duyệt trên cùng một kênh SSE */}
+      <Line x1={agentMid} y1={outY + boxH} x2={agentMid} y2={returnY} />
+      <Line x1={brX + brW / 2} y1={returnY} x2={agentMid} y2={returnY} />
+      <ArrowUp x={brX + brW / 2} y={returnY} length={returnY - (outY + boxH)} />
+      <Label x={(brX + brW / 2 + agentMid) / 2} y={returnY - 10} anchor="middle">
+        {t("streamedTokens")}
+      </Label>
+    </>
+  );
+}
+
+/* -------------------------------------------------------------------------
    AIVN — kiến trúc phân lớp đầy đủ: client + CDN, gateway, cân bằng tải, lớp
    bảo mật, cụm service, dữ liệu (DB + bản đọc + cache), lưu trữ tệp, hàng đợi
    tách việc nặng sang AI/worker/thông báo, và lớp giám sát ở dưới cùng.
@@ -486,6 +657,7 @@ const MKT_LABELS = {
  * `DiagramId` trong content mà quên vẽ hình, TypeScript sẽ báo lỗi ngay.
  */
 export const DIAGRAMS: Record<DiagramId, Diagram> = {
+  "rag-pipeline": { width: RAG_W, height: RAG_H, render: ragPipeline },
   "aivn-architecture": {
     width: AIVN_W,
     height: AIVN_H,

@@ -11,6 +11,7 @@ import { METRICS } from "./profile.ts";
 
 /** Id của hình vẽ dựng sẵn — xem src/components/visuals/diagrams.tsx */
 export type DiagramId =
+  | "rag-pipeline"
   | "aivn-architecture"
   | "kyc-flow"
   | "kafka-orders";
@@ -64,10 +65,10 @@ export type Project = {
    * thường không public. Rỗng thì trang detail KHÔNG vẽ khối links, nên
    * không bao giờ lòi ra một mảng trống.
    *
-   * TODO(owner): bạn có yêu cầu gắn link sản phẩm / GitHub cho các dự án,
-   * nhưng HIỆN KHÔNG DỰ ÁN NÀO có `links` — cả bốn mục bên dưới đều để
-   * trống. Không có URL nào tra ra được từ resume, và tôi không bịa link.
-   * Bạn điền vào đây theo mẫu:
+   * TODO(owner): hiện chỉ `saas-ai` (repo GitHub) và `aivn-elearning`
+   * (https://examdee.vn/) có `links`, cả hai đều do bạn cung cấp. Ba dự án còn
+   * lại vẫn để trống — không có URL nào tra ra được từ resume, và tôi không
+   * bịa link. Bạn điền tiếp theo mẫu:
    *   links: [
    *     { kind: "live", href: "https://...",
    *       label: { en: "Live site", vi: "Sản phẩm thật" } },
@@ -99,10 +100,69 @@ export const projects: Projects = {
     result: { en: "Outcome", vi: "Kết quả" },
   },
   items: [
+    /* TODO(owner): dự án solo, viết theo đúng mô tả bạn gửi — không có con số
+       vận hành nào nên `result` chỉ nói tới phần đã ship được.
+       Framework cụ thể của API và của web KHÔNG có trong mô tả nên không nằm
+       trong `tags`; bạn tự thêm cho khớp repo. */
+    {
+      id: "saas-ai",
+      title: "AI Sales Agent",
+      period: { en: "2026", vi: "2026" },
+      tagline: {
+        en: "Solo project — a multi-tenant B2B SaaS where a business configures an AI sales assistant over its own knowledge base, and that assistant answers its customers with grounded, cited answers.",
+        vi: "Dự án cá nhân — SaaS B2B multi-tenant, nơi doanh nghiệp tự cấu hình một trợ lý bán hàng AI chạy trên kho tri thức của chính mình, và trợ lý đó trả lời khách hàng bằng câu trả lời có căn cứ, có trích dẫn.",
+      },
+      problem: {
+        en: "A general-purpose model asked about a company's products answers confidently and wrongly. The knowledge that would make it right is scattered across documents, catalogues and prompts that change over time — and every tenant needs its own isolated copy of all of it.",
+        vi: "Một mô hình phổ thông khi được hỏi về sản phẩm của một doanh nghiệp sẽ trả lời rất tự tin và rất sai. Kiến thức để nó trả lời đúng lại nằm rải rác trong tài liệu, danh mục sản phẩm và những prompt thay đổi theo thời gian — mà mỗi khách hàng còn cần một bản riêng, tách biệt hẳn với nhau.",
+      },
+      solution: {
+        en: "Built it end to end: an upload drops a document into a background arq worker that extracts PDF/DOCX/HTML, chunks it and embeds it into pgvector; retrieval then fuses vector similarity with Postgres full-text search through Reciprocal Rank Fusion, so every answer is grounded in that tenant's own documents and cites them. Above that sits a multi-step tool-calling loop where the model decides when to search the knowledge base or capture a lead, with a per-turn tool registry driven by per-agent grants. Every model call goes through one provider-agnostic interface — OpenAI, Anthropic, and a network-free fake for tests — with token and cost accounted per message, and tokens and tool events streamed to the browser on a single SSE channel.",
+        vi: "Làm trọn từ đầu đến cuối: tài liệu tải lên được đẩy sang worker nền arq — bóc chữ từ PDF/DOCX/HTML, chia đoạn rồi nhúng vào pgvector; lúc truy hồi thì gộp độ tương đồng vector với full-text search của Postgres bằng Reciprocal Rank Fusion, nên mọi câu trả lời đều dựa trên tài liệu của chính khách hàng đó và có trích dẫn. Trên nền ấy là vòng lặp tool calling nhiều bước: mô hình tự quyết khi nào tra kho tri thức, khi nào ghi nhận một khách hàng tiềm năng, với danh sách công cụ dựng lại theo từng lượt dựa trên quyền cấp cho từng agent. Mọi lời gọi mô hình đều đi qua một giao diện chung không phụ thuộc nhà cung cấp — OpenAI, Anthropic, và một bản giả không cần mạng để chạy test — có đếm token và chi phí theo từng tin nhắn, token cùng sự kiện công cụ đẩy về trình duyệt trên cùng một kênh SSE.",
+      },
+      result: {
+        en: "Ships through a GitHub Actions pipeline — API to Render, web to Vercel, and database migrations to Neon as a separate one-shot job, with the rollout gated on a readiness check. Source is public.",
+        vi: "Triển khai bằng pipeline GitHub Actions — API lên Render, web lên Vercel, migration cơ sở dữ liệu thành một job riêng chạy một lần trên Neon, và chỉ mở rollout khi kiểm tra sẵn sàng đã qua. Mã nguồn công khai.",
+      },
+      tags: [
+        "Python",
+        "PostgreSQL",
+        "pgvector",
+        "arq",
+        "RAG",
+        "Hybrid Search",
+        "Tool Calling",
+        "SSE",
+        "OpenAI",
+        "Anthropic",
+        "Multi-tenant SaaS",
+        "GitHub Actions",
+        "Render",
+        "Vercel",
+        "Neon",
+      ],
+      links: [
+        {
+          kind: "repo",
+          href: "https://github.com/thainv25012001/saas-ai",
+          label: { en: "Source — github.com", vi: "Mã nguồn — github.com" },
+        },
+      ],
+      visuals: [
+        {
+          kind: "diagram",
+          id: "rag-pipeline",
+          caption: {
+            en: "Documents are indexed once in the background. At question time the same tenant's vector index and full-text index are searched together and their rankings fused, so the model answers from passages it actually retrieved — and the answer streams back token by token.",
+            vi: "Tài liệu được đánh chỉ mục một lần ở nền. Đến lúc có câu hỏi, chỉ mục vector và chỉ mục toàn văn của đúng khách hàng đó cùng được tìm rồi gộp thứ hạng lại, nên mô hình trả lời dựa trên những đoạn thật sự lấy về — và câu trả lời đẩy về dần theo từng token.",
+          },
+        },
+      ],
+    },
     {
       id: "aivn-elearning",
       title: "AIVN E-learning Platform",
-      period: { en: "2024 — Present", vi: "2024 — nay" },
+      period: { en: "2024 — 2026", vi: "2024 — 2026" },
       tagline: {
         en: "Startup e-learning platform for Vietnamese students and teachers — AI grading, question generation and speaking assessment.",
         vi: "Nền tảng e-learning của một startup, cho học sinh và giáo viên Việt Nam — chấm điểm bằng AI, tự sinh câu hỏi và đánh giá kỹ năng nói.",
@@ -119,7 +179,26 @@ export const projects: Projects = {
         en: `Serves ${METRICS.activeUsers.en} active users, with around ${METRICS.dailyMessages.en} messages a day moving between services. Schools and teachers rate it highly, students use it by choice, and the platform now runs competitions at city and national scale.`,
         vi: `Phục vụ ${METRICS.activeUsers.vi} người dùng hoạt động, khoảng ${METRICS.dailyMessages.vi} thông điệp mỗi ngày chạy giữa các service. Các tổ chức và giáo viên đánh giá cao, học sinh chủ động dùng, và nền tảng giờ tổ chức các cuộc thi ở cấp thành phố và toàn quốc.`,
       },
-      tags: ["Express.js", "React", "RabbitMQ", "Socket.IO", "Python AI"],
+      tags: [
+        "Express.js",
+        "Next.js",
+        "React",
+        "RabbitMQ",
+        "Redis",
+        "Socket.IO",
+        "Python AI",
+        "LLM APIs",
+        "AWS S3",
+        "AWS SES",
+        "Azure",
+      ],
+      links: [
+        {
+          kind: "live",
+          href: "https://examdee.vn/",
+          label: { en: "Live site — examdee.vn", vi: "Sản phẩm thật — examdee.vn" },
+        },
+      ],
       visuals: [
         {
           kind: "diagram",
