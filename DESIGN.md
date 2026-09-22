@@ -30,7 +30,14 @@ Both fonts are loaded in `src/app/[locale]/layout.tsx` and exposed as CSS
 variables `--font-pixel` / `--font-sans`, wired into Tailwind as
 `font-pixel` / `font-sans`.
 
-Playfair Display, used in the previous design, is removed entirely.
+Playfair Display, used in the previous design, is removed entirely —
+including from `scripts/generate-og.ts`, which renders the social share
+cards. That script kept loading Playfair after the rest of the redesign had
+moved on, so every link preview carried the old serif identity while the
+site behind it was pixel. It now loads Handjet at weight 700, matching the
+`display` token. Handjet's `vietnamese` subset renders through satori:
+verified by rendering `Nguyễn Việt Thái — DỰ ÁN TIÊU BIỂU ỆỰỚẠỖ` through
+the same `loadGoogleFont` → satori → resvg path and looking at the PNG.
 
 Press Start 2P, Pixelify Sans, Silkscreen and Jersey 10 were rejected
 outright during type selection — none of them ship a Vietnamese subset,
@@ -44,12 +51,48 @@ backed by `clamp()`:
 | `display` | `clamp(3.5rem, 12vw, 8.75rem)` | line-height `0.92`, letter-spacing `0.01em`, weight `700` |
 | `h2` | `clamp(2.5rem, 6vw, 4.5rem)` | line-height `1.0` |
 | `h3` | `clamp(1.5rem, 3vw, 2.25rem)` | line-height `1.1` |
-| `body` | `clamp(1.125rem, 1.4vw, 1.375rem)` | line-height `1.6` |
-| `label` | `0.875rem` | line-height `1.2`, letter-spacing `0.18em`, weight `500`, uppercase by convention at the call site |
+| `body` | `clamp(1.375rem, 1.8vw, 1.75rem)` | line-height `1.55` |
+| `ui` | `1.375rem` | line-height `1.2` — text on pixel controls (button `default`, header wordmark) |
+| `label` | `1.125rem` | line-height `1.2`, letter-spacing `0.18em`, weight `500`, uppercase by convention at the call site |
+| `small` | `1.125rem` | line-height `1.5` — secondary prose (footer). No tracking: it is sentence case, not a label |
+| `meta` | `0.9375rem` | line-height `1.3`, letter-spacing `0.14em` — backs the `.meta-label` component class |
 
 Display weight (700) and label weight (500) are baked directly into the
 `fontSize` entries, not applied ad hoc with `font-bold`/`font-medium`
 utilities at each call site.
+
+`body` is deliberately large — 22px at small viewports, 28px past 1555px.
+The brief asked for bigger type and an earlier pass delivered that for
+headings only: display grew 5.25rem → 8.75rem (+67%) while body stayed at
+the 20px of the pre-redesign design and the hero positioning line actually
+*shrank*, from 24px to 20px. A 20px paragraph under a 140px name reads as a
+caption. `ui`, `small` and `meta` exist so the primitives, the footer and
+`.meta-label` sit on the scale too rather than carrying one-off
+`text-[13px]`/`text-[1rem]` arbitrary values that drift away from it.
+
+Because the measure has to track the size, prose containers widened to
+`max-w-4xl` (`max-w-3xl` for the short contact blurb and the project-row
+tagline, which sits in a two-column grid and is constrained by its panel
+anyway). One step up from `max-w-2xl` was not enough: measured, `max-w-3xl`
+at 26px gives 57 characters per line, which is the "short and ragged"
+failure the widening exists to avoid. `max-w-4xl` measures 69–73.
+
+Measured at 1440×900, production build, headless Edge over CDP (characters
+per line = content-box width ÷ mean glyph advance for that element's own
+computed font, so a partial last line doesn't skew it):
+
+| Element | Size | Measure | Chars/line (en / vi) |
+|---|---|---|---|
+| Hero positioning | 25.92px | `max-w-4xl` | 71 / 71 |
+| About body | 25.92px | `max-w-4xl` | 73 / 69 |
+| Work intro | 25.92px | `max-w-4xl` | 73 / 72 |
+| Contact blurb | 25.92px | `max-w-3xl` | 63 / 63 |
+| Detail tagline / `dd` | 26px | `max-w-4xl` | 71 / 74 |
+
+Rendered type sizes at the same viewport, identical across `/en` and `/vi`:
+`h1` 140px, section `h2` 72px, project title (`h3`) 36px, body 25.92px,
+footer 18px. `body` reads 25.92px rather than its 28px ceiling because
+`1.8vw` of 1440 is 25.92 — the clamp only tops out past 1555px.
 
 ### Color
 
@@ -114,14 +157,31 @@ Prop table:
 | `variant` | `"primary" \| "secondary"` | `"primary"` | `primary` = accent fill, foreground border; `secondary` = transparent fill, foreground border, hovers to `bg-secondary` |
 | `size` | `"default" \| "sm"` | `"default"` | `default` = `h-14 px-8`, `sm` = `h-10 px-4` |
 | `className` | `string` | — | merged in via `cn()` |
-| `href` | `string` | — | when present, renders `<a>` |
-| `external` | `boolean` | — | anchor-only; adds `target="_blank" rel="noopener noreferrer"` |
+| `href` | `string` | — | when present, renders `next/link` or `<a>` (see below) |
+| `external` | `boolean` | — | anchor-only; adds `target="_blank" rel="noopener noreferrer"`, and forces the raw `<a>` |
+| `navigate` | `"link" \| "anchor"` | inferred | anchor-only; overrides the inference |
 | ...rest | native `<a>` or `<button>` attributes | — | passed through depending on which element renders |
 
-When `href` is provided the component renders `<a href={href}>`; otherwise
-it renders `<button>`. It never renders a clickable `<div>` — the
+When `href` is provided the component renders a link element; otherwise it
+renders `<button>`. It never renders a clickable `<div>` — the
 implementation comment is explicit that a div with `onClick` would be
 invisible to keyboard and screen-reader users as a control.
+
+Which link element: `external` always wins and gives the raw `<a>`.
+Otherwise an href starting with `/` (but not `//`, which is
+protocol-relative and therefore external) is an App Router route and
+renders `next/link`; everything else — `#contact`, `mailto:`, absolute
+URLs — stays a raw `<a>`. `navigate` forces either branch when the
+inference is wrong.
+
+This matters more than it looks. Both project links —
+`ProjectRow`'s "view detail" and `ProjectDetail`'s "back to work" — built
+their href from a template literal and got the raw `<a>`, so every click
+into a case study was a full white document reload on a site whose whole
+brief is game feel. The header was already using `next/link`, so the two
+halves of the same navigation behaved differently. Both call sites now pass
+`navigate="link"` explicitly rather than relying on the inference, so the
+intent is visible where someone edits it.
 
 ### `PixelPanel`
 
@@ -181,6 +241,26 @@ keyboard users only — a mouse click never triggers both `:active` and
   component. It uses `min-h-dvh` — not `min-h-screen` — so mobile browser
   chrome (the address bar showing/hiding) doesn't cause the screen to fall
   short of the viewport.
+- Each `Screen` renders its heading as a real `<h2 class="text-h2">`, with
+  the section number demoted to a `text-label` line above it. Before this,
+  the heading was a `<p class="text-label">` — 14px muted, the *smallest*
+  type on a page whose display type is 140px — and the document went
+  straight from one `<h1>` to a set of `<h3>`s with no `<h2>` anywhere. One
+  change fixes both the visual hierarchy and the heading tree.
+- **Screens centre with `my-auto` on the inner block, not
+  `justify-center` on the flex column.** They are `min-h-dvh`, not
+  `h-dvh`, and several of them are legitimately taller than the viewport
+  (Stack with a category open, Work, Experience — the home page measures
+  ~7.4 screens of content for 6 sections). When a column flex container's
+  content overflows, `justify-center` distributes the overflow to *both*
+  ends, and the overflow above the start edge cannot be scrolled to — the
+  top of the section is simply unreachable and gets clipped. An `auto`
+  block margin centres identically while there is free space and collapses
+  to `0` when there isn't, so a tall screen falls back to top-aligned and
+  scrolls normally. Vertical padding is `py-20 md:py-24`, down from
+  `py-24 md:py-32`, to buy back height on the screens that overflow
+  without leaving the short ones looking empty. `Hero` is not a `Screen`
+  (it has no index/heading) but repeats the same pattern deliberately.
 - **No scroll-snap**, deliberately. The stack screen grows past the
   viewport once a tech category is expanded; snap-scrolling would trap the
   reader mid-screen and break keyboard scrolling (arrow keys / Page Down).
@@ -271,7 +351,24 @@ keyboard users only — a mouse click never triggers both `:active` and
   real `<button>` elements (via `PixelButton`) carrying `aria-pressed={active
   === g.id}`.
 - No horizontal overflow at 320px viewport width; verified at 320/768/1440
-  on both locales per the design spec's verification table.
+  on `/en`, `/vi` and `/en/work/aivn-elearning` — `scrollWidth` equals
+  `clientWidth` at every combination (305/305, 753/753, 1425/1425). The
+  architecture diagram is wider than a phone, but it lives in its own
+  `overflow-x-auto` container, so it scrolls itself rather than the
+  document.
+- No vertical clipping: at both 1440×900 and 1280×800, on both locales,
+  every home screen's inner block sits at a non-negative offset from its
+  section's top edge (measured inset ≥ 96px everywhere). The three screens
+  that are genuinely taller than the viewport — Stack, Work, Experience —
+  top-align and scroll, which is the `my-auto` behaviour described under
+  Layout.
+- Body copy and the section `h2` clear 4.5:1 in both themes, measured from
+  computed styles against the nearest painted background:
+
+  | | Dark | Light |
+  |---|---|---|
+  | Body (`text-muted-foreground`) | 6.53:1 | 5.50:1 |
+  | Section `h2` (`text-foreground`) | 16.91:1 | 18.96:1 |
 
 ## Content rules
 
@@ -291,13 +388,35 @@ necessity, not lint: `scripts/generate-og.ts` loads
 `src/data/content/index.ts` directly via Node's built-in type-stripping
 (`node --experimental-strip-types`), which is plain Node ESM resolution —
 it cannot guess extensions the way bundler-based resolution (webpack,
-Next's own compiler) can. If an internal import in that directory drops its
-`.ts` extension, module resolution fails inside the OG script — and that
-script wraps its own logic in a way that **swallows the resulting error**,
-so `npm run og` (wired into `prebuild`) fails silently: no exception
-surfaces, no build failure, and `og-en.png` / `og-vi.png` simply don't get
-regenerated with current content. This is the single most dangerous
-footgun in the repo — there is no compiler or test that would catch it.
+Next's own compiler) can. Drop a `.ts` extension on an internal import in
+that directory and module resolution fails inside the OG script.
+
+**The failure is loud, not silent.** An earlier revision of this document
+claimed the script "swallows the resulting error" so the build passes with
+stale OG images. That is wrong, and it is worth being precise about why:
+the resolution error is thrown by Node's ESM resolver at *import* time, in
+the linking phase, before any module body executes. `main()` is never
+called, so the `main().catch(...)` handler at the bottom of the script —
+the one that deliberately exits `0` when the font fetch fails offline —
+is never reached either. The process dies with `ERR_MODULE_NOT_FOUND` and
+exit code `1`. Because `prebuild` runs `og`, `npm run build` fails at the
+first step.
+
+Verified by reproduction: changing `./about.ts` to `./about` in
+`src/data/content/index.ts` and running `npm run og` produces
+
+```
+Error [ERR_MODULE_NOT_FOUND]: Cannot find module '.../src/data/content/about'
+    imported from .../src/data/content/index.ts
+  code: 'ERR_MODULE_NOT_FOUND'
+exit 1
+```
+
+So the requirement stands — the extensions are load-bearing — but the
+consequence of breaking it is a red build, not a quiet one. The
+`main().catch` handler only covers failures *inside* `main()`, which in
+practice means the font fetch: no network at build time keeps the existing
+PNGs and exits `0` on purpose.
 
 ## Routes
 

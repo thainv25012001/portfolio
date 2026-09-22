@@ -63,6 +63,19 @@ export type Project = {
    * Link ra sản phẩm thật hoặc mã nguồn. Tuỳ chọn — dự án của khách hàng
    * thường không public. Rỗng thì trang detail KHÔNG vẽ khối links, nên
    * không bao giờ lòi ra một mảng trống.
+   *
+   * TODO(owner): bạn có yêu cầu gắn link sản phẩm / GitHub cho các dự án,
+   * nhưng HIỆN KHÔNG DỰ ÁN NÀO có `links` — cả bốn mục bên dưới đều để
+   * trống. Không có URL nào tra ra được từ resume, và tôi không bịa link.
+   * Bạn điền vào đây theo mẫu:
+   *   links: [
+   *     { kind: "live", href: "https://...",
+   *       label: { en: "Live site", vi: "Sản phẩm thật" } },
+   *     { kind: "repo", href: "https://github.com/...",
+   *       label: { en: "Source", vi: "Mã nguồn" } },
+   *   ]
+   * Dự án nào không công khai được thì cứ bỏ trống — trang detail tự ẩn
+   * khối links, không lòi ra mục rỗng.
    */
   links?: { label: L; href: string; kind: "live" | "repo" | "doc" }[];
 };

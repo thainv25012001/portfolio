@@ -40,17 +40,20 @@ Each file maps to exactly one section of the page:
 > `.ts` extension. `scripts/generate-og.ts` loads this directory directly
 > through Node's type-stripping, and plain Node ESM resolution can't guess
 > extensions the way the Next/webpack compiler can. Drop the `.ts` and the
-> OG-image generation script dies silently — it swallows its own errors so
-> the build won't fail, it just stops producing current OG images.
+> OG-image script fails **loudly**: Node's resolver throws
+> `ERR_MODULE_NOT_FOUND` while linking modules, before `main()` runs, so
+> the script's own `main().catch(...)` never sees it and the process exits
+> `1`. Since `prebuild` runs `og`, `pnpm build` stops there. (That handler
+> exists for a different case — no network at build time — where it keeps
+> the existing PNGs and exits `0` on purpose.)
 
-`PROFILE` is filled in from `Thai-Nguyen-Resume.docx`. Two things are still
-open:
+`PROFILE` was filled in from the resume. Three things are still open:
 
 ```bash
 pnpm run check:todo   # lists every remaining placeholder
 ```
 
-As of this writing that surfaces two items:
+As of this writing that surfaces three items:
 
 - **`PROFILE.siteUrl`** (`src/data/content/profile.ts`) is still the
   placeholder `https://your-domain.vercel.app`. Every canonical URL,
@@ -60,14 +63,29 @@ As of this writing that surfaces two items:
   `TODO(owner)` flagging that its problem/approach copy is inferred prose,
   not verified against the source resume the way the other projects' copy
   is.
+- The optional `links` field on `Project`
+  (`src/data/content/projects.ts`) is **empty on all four projects**. Live
+  product and GitHub links were asked for, but no URL was knowable from the
+  resume and none were invented. The `TODO(owner)` on the field carries the
+  shape to fill in. Until then, the project detail pages render no links
+  block at all — that is by design, not a bug.
 
 Each string is an `{ en, vi }` pair (typed as `L = Record<Locale, string>`
 in `src/lib/i18n.ts`). A missing translation is a TypeScript compile error,
 not a runtime gap.
 
-To update the resume: replace `public/Thai-Nguyen-Resume.docx`, re-export it
-to PDF, and overwrite `public/resume.pdf` (the current one was produced by
-converting via Word).
+To update the resume: overwrite `public/resume.pdf`. That file is the only
+resume artefact in the repo — the site links straight to it via
+`PROFILE.resumeUrl` (`/resume.pdf`), and the "Resume" button opens it in a
+new tab. Keep the filename, or change `resumeUrl` in
+[`profile.ts`](src/data/content/profile.ts) to match.
+
+The source `.docx` the PDF was exported from is **not** in the repo (it was
+removed in `acee4fd`); `public/` holds only `og-en.png`, `og-vi.png`,
+`resume.pdf` and `work/`. Keep the editable original wherever you normally
+keep it and export to PDF from there. If any of `PROFILE`'s facts change
+with it — name, email, LinkedIn, years of experience — update
+`profile.ts` too; nothing reads the PDF.
 
 ## Structure
 
