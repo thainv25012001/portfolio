@@ -155,7 +155,10 @@ git commit -m "chore: add throwaway type specimen to validate Handjet"
 - Modify: `src/app/[locale]/layout.tsx` (font imports and `<html>` class)
 - Modify: `src/app/globals.css` (palette, type scale, pixel tokens)
 - Modify: `tailwind.config.ts` (font families, fontSize tokens, boxShadow, borderRadius)
-- Delete: `src/app/specimen/page.tsx`
+- Delete: `src/app/specimen/page.tsx` **and** `src/app/specimen/layout.tsx` — remove
+  the whole `src/app/specimen/` directory. Task 1 discovered that the segment needs
+  its own layout, because this repo has no `src/app/layout.tsx`: `[locale]/layout.tsx`
+  is the root layout.
 
 **Interfaces:**
 - Produces:
@@ -210,7 +213,7 @@ Inside the existing `@layer base` `:root` block, after `--ease-editorial`:
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
       },
       fontSize: {
-        display: ["clamp(3.5rem, 12vw, 8.75rem)", { lineHeight: "0.92", letterSpacing: "0.01em" }],
+        display: ["clamp(3.5rem, 12vw, 8.75rem)", { lineHeight: "0.92", letterSpacing: "0.01em", fontWeight: "700" }],
         h2: ["clamp(2.5rem, 6vw, 4.5rem)", { lineHeight: "1.0" }],
         h3: ["clamp(1.5rem, 3vw, 2.25rem)", { lineHeight: "1.1" }],
         body: ["clamp(1.125rem, 1.4vw, 1.375rem)", { lineHeight: "1.6" }],
@@ -223,10 +226,10 @@ Inside the existing `@layer base` `:root` block, after `--ease-editorial`:
       borderRadius: { none: "0", DEFAULT: "0", sm: "0", md: "0", lg: "0", full: "0" },
 ```
 
-- [ ] **Step 4: Delete the specimen page**
+- [ ] **Step 4: Delete the whole specimen segment**
 
 ```bash
-rm src/app/specimen/page.tsx
+rm -rf src/app/specimen
 ```
 
 - [ ] **Step 5: Verify**
